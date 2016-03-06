@@ -1,0 +1,21 @@
+{
+  "name": "ioh-cover-maker",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "bower": "^1.7.7",
+    "express": "^4.13.4",
+    "multer": "^1.1.0",
+    "webshot": "^0.18.0"
+  },
+  "devDependencies": {
+    "bower": "^1.7.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Hunsin",
+  "license": "MIT"
+}

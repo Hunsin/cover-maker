@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="import" href="/elements-list.html">
+		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+		<style is="custom-style" include="iron-flex iron-positioning">
+			:root {
+				--paper-toolbar-color: #FFF;
+				--primary-color: var(--paper-red-500);
+				--accent-color: var(--paper-orange-500);
+				--paper-fab-keyboard-focus-background: var(--paper-orange-700);
+			}
+
+			body {
+				@apply(--paper-font-common-base);
+			}
+
+			paper-fab {
+				position: fixed;
+				right: 1.5em;
+				bottom: 2em;
+			}
+		</style>
+	</head>
+	
+<!-- body -->
+	<body class="fullbleed layout vertical">
+		<template is="dom-bind" id="app">
+			<paper-header-panel>
+				<paper-toolbar>
+					<div class="title">IOH Cover Maker</div>
+				</paper-toolbar>
+				<iron-pages attr-for-selected="page-route" selected="{{page}}">
+
+				<!-- speakers list -->
+					<section page-route="list">
+						<firebase-collection
+							location="https://ioh-cover-maker.firebaseio.com/speakers"
+							data="{{speakerList}}"></firebase-collection>
+						<template is="dom-repeat" items="[[speakerList]]" as="speaker">
+							<paper-item class="flex horizontal">
+								<div>[[speaker.name]]</div>
+							</paper-item>
+						</template>
+						<paper-fab icon="add"></paper-fab>
+					</section>
+					
+				<!-- cover editor panel -->
+					<section page-route="editor">
+						<cover-editor speaker={{speakerID}}></cover-editor>
+					</section>
+				</iron-pages>
+			</paper-header-panel>
+		</template>
+		<script>
+			(function() {
+				var app = document.querySelector("#app");
+				app.page = "editor";
+			})();
+		</script>
+	</body>
+</html>

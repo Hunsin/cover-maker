@@ -1,0 +1,265 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="hammer.html">
+<dom-module id="cover-editor">
+	<style>
+		:host {
+			display: block;
+			margin-top: 1em;
+			width: 100%;
+		}
+		
+		* {
+			box-sizing: border-box;
+		}
+
+		.experience-text {
+			margin: 0 0 0 240px;
+		    
+		    width: 690px;
+			height: 22px;
+		    line-height: 22px;
+		    
+		    text-align: right;
+		}
+		
+		.experience-text:first-child {
+			margin-top: 12px;
+			margin-right: 30px;
+		}
+		
+		input {
+			border: none;
+			padding: 0;
+			
+			overflow: hidden;
+		
+			font-family: "Helvetica", "Microsoft JhengHei", "Noto Sans";
+			font-size: 16px;
+		}
+		
+		.img-area {
+			background-image: url("transparent.png");
+			background-repeat: repeat;
+			overflow: hidden;
+		}
+		
+		.img-area img {
+			position: relative;
+			height: auto;
+		}
+
+		.text-red {
+			margin: 0 4px;
+			
+			width: 22px;
+			height: 22px;
+		}
+		
+		input.text-red:checked + .experience-text {
+			color: #F00;
+		}
+		
+		#cover-background {
+			position: relative;
+	
+			width: inherit;
+			height: 430px;
+		}
+
+		#cover-container {
+			display: block;
+			position: relative;
+			margin: 0 auto;
+			width: 960px;
+			height: 540px;
+		}
+		
+		#cover-location {
+			position: absolute;
+			top: 390px;
+			
+			width: 160px;
+			height: 40px;
+			line-height: 40px;
+			
+			text-align: center;
+			background-color: transparent;
+		}
+		
+		#experience-box {
+		    position: absolute;
+		    top: 430px;
+
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-flow: row-reverse wrap;
+			flex-flow: row-reverse wrap;
+			align-content: flex-start;
+		    width: inherit;
+		    height: 110px;
+			
+		    background-image: url(poster-brand.png);
+		    background-size: cover;
+		}
+		
+		#cover-avatar {
+			position: absolute;
+			top: 230px;
+			
+			width: 160px;
+			height: 160px;
+			border: 5px solid;
+			border-color: #FFF;
+		}
+	</style>
+	
+	<template>
+		<div id="cover-container">
+
+			<!-- background image -->
+			<div class="img-area" id="cover-background">
+				<img id="background" src="[[speaker.background.URL]]"
+					 style="top: [[speaker.background.Top]]px; left: [[speaker.background.Left]]px; width: [[speaker.background.Width]]px">
+			</div>
+
+			<!-- avatar image -->
+			<div class="img-area" id="cover-avatar"
+				 style="left: [[speaker.avatarPosition]]px;"> 
+				<img id="avatar" src="[[speaker.avatar.URL]]"
+					 style="top: [[speaker.avatar.Top]]px; left: [[speaker.avatar.Left]]px; width: [[speaker.avatar.Width]]px">
+			</div>
+
+			<!-- location -->
+			<input id="cover-location" type="text" value="{{speaker.location::input}}" placeholder="地點：請輸入地點"
+				   style="left: [[speaker.avatarPosition]]px; color: [[speaker.locationColor]]">
+			<div id="experience-box">
+				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
+				<input class="text-red" name="text_red" type="radio" value="0" checked>
+				<input class="experience-text" type="text" value={{speaker.experience.0::input}} placeholder="輸入學經歷 如：MIT Media Lab, Master of Science Media Arts and Science 碩士, 20xx">
+				<input class="text-red" name="text_red" type="radio" value="1">
+				<input class="experience-text" type="text" value={{speaker.experience.1::input}} placeholder="輸入學經歷">
+				<input class="text-red" name="text_red" type="radio" value="2">
+				<input class="experience-text" type="text" value={{speaker.experience.2::input}} placeholder="輸入學經歷">
+			</div>
+		</div>
+
+		<!-- control panel -->
+		<div>
+			選擇背景圖片：<input class="upload-img" name="background" type="file" accept="image/*" on-change="sendImg"><br>
+			選擇大頭貼照：<input class="upload-img" name="avatar" type="file" accept="image/*" on-change="sendImg"><br>
+			大頭貼位置：
+			<input type="button" value="左側" on-tap="togglePosition">
+			<input type="button" value="右側" on-tap="togglePosition">
+			<input type="button" value="不顯示" on-tap=""><br>
+			地點文字顏色：
+			<input type="button" value="白色" on-tap="toggleTextColor">
+			<input type="button" value="黑色" on-tap="toggleTextColor">
+			<input type="submit" value="輸出海報！" on-tap="">
+		</div>
+	</template>
+	
+	<script>
+		Polymer({
+			is: "cover-editor",
+			properties: {
+				speaker: {
+					type: Object,
+					notify: true,
+					value: function() {
+						return {
+							id: "UxeGiO",
+							name: "",
+							experience: ["", "", ""],
+							experienceFocus: 0,
+							background: {
+								URL: "/assets/instruction.png",
+								Top: 0,
+								Left: 0,
+								Width: 960
+							},
+							avatar: {
+								URL: "https://scontent-tpe1-1.xx.fbcdn.net/hprofile-xta1/v/t1.0-1/c16.66.155.155/1656016_612951305464980_730631783_n.jpg?oh=e81455e05e03ca3e5dc8da75bd65afce&oe=575BA3EC",
+								Top: 0,
+								Left: 0,
+								Width: 150
+							},
+							avatarPosition: 768,
+							location: "",
+							locationColor: "black"
+						};
+					}
+				}
+			},
+			ready: function() {
+				/*global Hammer*/
+				"use strict";
+
+				var self = this,
+					imgBackground = this.querySelector("#background"),
+					imgAvatar = this.querySelector("#avatar"),
+					hmBackground = new Hammer.Manager(imgBackground),
+					hmAvatar = new Hammer.Manager(imgAvatar);
+
+				function onPan(e) {
+					if (e.type === "panend") {
+						self.speaker[e.target.id].Top = e.target.offsetTop;
+						self.speaker[e.target.id].Left = e.target.offsetLeft;
+					}
+					else {
+						e.target.style.top = self.speaker[e.target.id].Top + e.deltaY + "px";
+						e.target.style.left = self.speaker[e.target.id].Left + e.deltaX + "px";
+					}
+				}
+
+				hmBackground.add(new Hammer.Pan({threshold: 0, pointers: 0}));
+				hmBackground.on("panmove panend", onPan);
+				hmAvatar.add(new Hammer.Pan({threshold: 0, pointers: 0}));
+				hmAvatar.on("panmove panend", onPan);
+				
+				
+			},
+
+			togglePosition: function(e) {
+				if (e.target.value == "左側") {
+					this.set("speaker.avatarPosition", 32);
+				}
+				else {
+					this.set("speaker.avatarPosition", 768);
+				}
+			},
+
+			toggleTextColor: function(e) {
+				if (e.target.value == "白色") {
+					this.set("speaker.locationColor", "white");
+				}
+				else {
+					this.set("speaker.locationColor", "black");
+				}
+			},
+
+			sendImg: function(e) {
+				var formData = new FormData(),
+					xhr = new XMLHttpRequest(),
+					self = this,
+					img = e.target.files[0],
+					imgName = e.target.name,
+					fileName = imgName + "_" + this.speaker.id + img.type.replace("image/", ".");
+
+				formData.append("filename", fileName);
+				formData.append("img", img);
+
+				xhr.open("POST", "/upload", true);
+				xhr.onload = function(e) {
+					if (this.status == 200) {
+						self.set("speaker." + imgName + ".URL", this.response);
+					}
+					else {
+						console.log("error");
+					}
+				};
+				xhr.send(formData);
+			}
+		});
+	</script>
+</dom-module>
