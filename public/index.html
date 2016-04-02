@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>IOH Cover Maker</title>
 		<link rel="import" href="/elements-list.html">
 		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
@@ -31,35 +31,30 @@
 		<template is="dom-bind" id="app">
 			<paper-header-panel>
 				<paper-toolbar>
+					<paper-icon-button icon="arrow-back" hidden="[[_isList(page)]]" on-tap="backToList"></paper-icon-button>
 					<div class="title">IOH Cover Maker</div>
 				</paper-toolbar>
 				<iron-pages attr-for-selected="page-route" selected="{{page}}">
 
 				<!-- speakers list -->
 					<section page-route="list">
-						<firebase-collection
-							location="https://ioh-cover-maker.firebaseio.com/speakers"
-							data="{{speakerList}}"></firebase-collection>
-						<template is="dom-repeat" items="[[speakerList]]" as="speaker">
-							<paper-item class="flex horizontal">
-								<div>[[speaker.name]]</div>
-							</paper-item>
-						</template>
-						<paper-fab icon="add"></paper-fab>
+						<speaker-list
+							data-url="https://ioh-cover-maker.firebaseio.com/speakers"
+							speaker-url="{{speakerUrl}}"
+							schema="[[schema]]"
+							page="{{page}}"></speaker-list>
 					</section>
 					
 				<!-- cover editor panel -->
 					<section page-route="editor">
-						<cover-editor speaker={{speakerID}}></cover-editor>
+						<firebase-document 
+							location={{speakerUrl}}
+							data={{speaker}}></firebase-document>
+						<cover-editor speaker={{speaker}}></cover-editor>
 					</section>
 				</iron-pages>
 			</paper-header-panel>
 		</template>
-		<script>
-			(function() {
-				var app = document.querySelector("#app");
-				app.page = "editor";
-			})();
-		</script>
+		<script src="/assets/app.js"></script>
 	</body>
 </html>

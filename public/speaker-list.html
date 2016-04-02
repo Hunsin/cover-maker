@@ -1,0 +1,96 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/firebase-element/firebase-collection.html">
+
+<dom-module id="speaker-list">
+    <style>
+        :host {
+            display: block;
+        }
+        
+        paper-fab {
+			position: fixed;
+			right: 1.5em;
+			bottom: 2em;
+        }
+
+        paper-item {
+            border-bottom: 1px solid var(--light-theme-divider-color);
+            cursor: pointer;
+        }
+
+        paper-item:hover {
+            background-color: var(--paper-grey-50);
+        }
+
+        .avatar {
+			margin: 0.5em 1em;
+			width: 3em;
+			height: 3em;
+			border-radius: 50%;
+			background-size: 100%;
+			background-repeat: no-repeat;
+		}
+    </style>
+
+    <template>
+        <firebase-collection
+            location="{{dataUrl}}"
+            data="{{speakers}}"></firebase-collection>
+
+        <p hidden="[[_isEmpty(speakers.length)]]">空空如也~</p>
+
+        <template is="dom-repeat" items="[[speakers]]" as="speaker">
+            <paper-item class="flex horizontal" name="[[speaker.__firebaseKey__]]" on-tap="editCover">
+                <div class="avatar" style="background-image: url([[speaker.avatar.URL]]);"></div>
+				<div name="[[speaker.__firebaseKey__]]">[[speaker.name]]</div>
+			</paper-item>
+        </template>
+        <paper-fab icon="add" on-tap="newCover"></paper-fab>
+    </template>
+
+    <script>
+        Polymer({
+            is: "speaker-list",
+            properties: {
+                dataUrl: {
+                    type: String,
+                    notify: true
+                },
+                speakerUrl: {
+                    type: String,
+                    notify: true
+                },
+                schema: {
+                    type: Object,
+                    notify: true
+                },
+                page: {
+                    type: String,
+                    notify: true
+                }
+            },
+
+            _isEmpty: function(length) {
+                return !!length;
+            },
+
+            editCover: function(e) {
+                // update the speaker's url for editor
+                this.speakerUrl = this.dataUrl + "/" + e.target.name;
+                this.page = "editor";
+            },
+
+            newCover: function() {
+                var last = this.speakers.length;
+                document.querySelector("firebase-collection").add(this.schema);
+
+                // update the newst speaker's id
+                this.set("speakers." + last + ".id", this.speakers[last].__firebaseKey__);
+                this.speakerUrl = this.dataUrl + "/" + this.speakers[last].__firebaseKey__;
+                this.page = "editor";
+            }
+        });
+    </script>
+</dom-module>

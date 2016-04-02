@@ -132,7 +132,7 @@
 
 			<!-- location -->
 			<input id="cover-location" type="text" value="{{speaker.location::input}}" placeholder="地點：請輸入地點"
-				   style="left: [[speaker.avatarPosition]]px; color: [[speaker.locationColor]]">
+				   style="left: {{speaker.avatarPosition}}px; color: {{speaker.locationColor}}">
 			<div id="experience-box">
 				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
 				<input class="text-red" name="text_red" type="radio" value="0" checked>
@@ -165,30 +165,7 @@
 			properties: {
 				speaker: {
 					type: Object,
-					notify: true,
-					value: function() {
-						return {
-							id: "UxeGiO",
-							name: "",
-							experience: ["", "", ""],
-							experienceFocus: 0,
-							background: {
-								URL: "/assets/instruction.png",
-								Top: 0,
-								Left: 0,
-								Width: 960
-							},
-							avatar: {
-								URL: "https://scontent-tpe1-1.xx.fbcdn.net/hprofile-xta1/v/t1.0-1/c16.66.155.155/1656016_612951305464980_730631783_n.jpg?oh=e81455e05e03ca3e5dc8da75bd65afce&oe=575BA3EC",
-								Top: 0,
-								Left: 0,
-								Width: 150
-							},
-							avatarPosition: 768,
-							location: "",
-							locationColor: "black"
-						};
-					}
+					notify: true
 				}
 			},
 			ready: function() {
@@ -197,27 +174,47 @@
 
 				var self = this,
 					imgBackground = this.querySelector("#background"),
-					imgAvatar = this.querySelector("#avatar"),
-					hmBackground = new Hammer.Manager(imgBackground),
-					hmAvatar = new Hammer.Manager(imgAvatar);
+					imgAvatar = this.querySelector("#avatar");
 
-				function onPan(e) {
-					if (e.type === "panend") {
-						self.speaker[e.target.id].Top = e.target.offsetTop;
-						self.speaker[e.target.id].Left = e.target.offsetLeft;
+				function hmImage(element) {
+					var hm = new Hammer.Manager(element);
+					
+					function onPan(e) {
+						e.preventDefault();
+						if (e.type === "panend") {
+							// e.target.id will bo either "background" or "avatar"
+							self.speaker[e.target.id].Top = e.target.offsetTop;
+							self.speaker[e.target.id].Left = e.target.offsetLeft;
+							self.notifyPath("speaker." + e.target.id, self.speaker[e.target.id]);
+						}
+						else {
+							e.target.style.top = self.speaker[e.target.id].Top + e.deltaY + "px";
+							e.target.style.left = self.speaker[e.target.id].Left + e.deltaX + "px";
+						}
 					}
-					else {
-						e.target.style.top = self.speaker[e.target.id].Top + e.deltaY + "px";
-						e.target.style.left = self.speaker[e.target.id].Left + e.deltaX + "px";
+					
+					function onPinch(e) {
+						e.preventDefault();
 					}
+					
+					function onMousewheel(e) {
+						e.preventDefault();
+					}
+
+					element.addEventListener("load", function() {
+						this.style.width = self.speaker[this.id].Width + "px";
+					});
+					element.addEventListener("wheel", onMousewheel, false);
+
+					hm.add(new Hammer.Pan({threshold: 0, pointers: 0}));
+					hm.add(new Hammer.Pinch({threshold: 0})).recognizeWith(hm.get("pan"));
+
+					hm.on("panmove panend", onPan);
+					hm.on("pinchstart pinchmove pinchend", onPinch);
 				}
-
-				hmBackground.add(new Hammer.Pan({threshold: 0, pointers: 0}));
-				hmBackground.on("panmove panend", onPan);
-				hmAvatar.add(new Hammer.Pan({threshold: 0, pointers: 0}));
-				hmAvatar.on("panmove panend", onPan);
 				
-				
+				hmImage(imgBackground);
+				hmImage(imgAvatar);
 			},
 
 			togglePosition: function(e) {
@@ -243,7 +240,7 @@
 					xhr = new XMLHttpRequest(),
 					self = this,
 					img = e.target.files[0],
-					imgName = e.target.name,
+					imgName = e.target.name, // avatar or background
 					fileName = imgName + "_" + this.speaker.id + img.type.replace("image/", ".");
 
 				formData.append("filename", fileName);
@@ -252,6 +249,7 @@
 				xhr.open("POST", "/upload", true);
 				xhr.onload = function(e) {
 					if (this.status == 200) {
+						// path will be "speaker.avatar.URL" or "speaker.background.URL"
 						self.set("speaker." + imgName + ".URL", this.response);
 					}
 					else {

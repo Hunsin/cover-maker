@@ -1,0 +1,21 @@
+{
+    "avatar": {
+        "Left": 0,
+        "Top": 0,
+        "URL": "/assets/avatar.png",
+        "Width": 150
+    },
+    "avatarPosition": 768,
+    "background": {
+        "Left": 0,
+        "Top": 0,
+        "URL": "/assets/instruction.png",
+        "Width": 960
+    },
+    "experience": ["", "", ""],
+    "experienceFocus": 0,
+    "id": "",
+    "location": "",
+    "locationColor": "black",
+    "name": "點我輸入姓名"
+}
