@@ -120,19 +120,19 @@
 			<!-- background image -->
 			<div class="img-area" id="cover-background">
 				<img id="background" src="[[speaker.background.URL]]"
-					 style="top: [[speaker.background.Top]]px; left: [[speaker.background.Left]]px; width: [[speaker.background.Width]]px">
+					 style$="top: [[speaker.background.Top]]px; left: [[speaker.background.Left]]px; width: [[speaker.background.Width]]px">
 			</div>
 
 			<!-- avatar image -->
 			<div class="img-area" id="cover-avatar"
-				 style="left: [[speaker.avatarPosition]]px;"> 
+				 style$="left: [[speaker.avatarPosition]]px;"> 
 				<img id="avatar" src="[[speaker.avatar.URL]]"
-					 style="top: [[speaker.avatar.Top]]px; left: [[speaker.avatar.Left]]px; width: [[speaker.avatar.Width]]px">
+					 style$="top: [[speaker.avatar.Top]]px; left: [[speaker.avatar.Left]]px; width: [[speaker.avatar.Width]]px">
 			</div>
 
 			<!-- location -->
 			<input id="cover-location" type="text" value="{{speaker.location::input}}" placeholder="地點：請輸入地點"
-				   style="left: {{speaker.avatarPosition}}px; color: {{speaker.locationColor}}">
+				   style$="left: {{speaker.avatarPosition}}px; color: {{speaker.locationColor}}">
 			<div id="experience-box">
 				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
 				<input class="text-red" name="text_red" type="radio" value="0" checked>
@@ -181,29 +181,41 @@
 					
 					function onPan(e) {
 						e.preventDefault();
+						var img = self.speaker[e.target.id]; // e.target.id will be either "background" or "avatar"
+
 						if (e.type === "panend") {
-							// e.target.id will bo either "background" or "avatar"
-							self.speaker[e.target.id].Top = e.target.offsetTop;
-							self.speaker[e.target.id].Left = e.target.offsetLeft;
-							self.notifyPath("speaker." + e.target.id, self.speaker[e.target.id]);
+							img.Top = e.target.offsetTop;
+							img.Left = e.target.offsetLeft;
+							self.notifyPath("speaker." + e.target.id, img);
 						}
 						else {
-							e.target.style.top = self.speaker[e.target.id].Top + e.deltaY + "px";
-							e.target.style.left = self.speaker[e.target.id].Left + e.deltaX + "px";
+							e.target.style.top = img.Top + e.deltaY + "px";
+							e.target.style.left = img.Left + e.deltaX + "px";
 						}
 					}
 					
 					function onPinch(e) {
 						e.preventDefault();
+						var img = self.speaker[e.target.id];
+
+						if (e.type === "pinchend") {
+							img.Width = e.target.offsetWidth * e.scale;
+							self.notifyPath("speaker." + e.target.id, img);
+						}
+						else {
+							e.target.style.width = img.Width * e.scale + "px";
+						}
 					}
 					
 					function onMousewheel(e) {
 						e.preventDefault();
+						e.center = {
+							x: e.offsetX,
+							y: e.offsetY
+						};
+						e.scale = (e.deltaY > 0)? 1.05 : (1 / 1.05);
 					}
 
-					element.addEventListener("load", function() {
-						this.style.width = self.speaker[this.id].Width + "px";
-					});
 					element.addEventListener("wheel", onMousewheel, false);
 
 					hm.add(new Hammer.Pan({threshold: 0, pointers: 0}));

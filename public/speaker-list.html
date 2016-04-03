@@ -1,10 +1,11 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="/bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/bower_components/firebase-element/firebase-collection.html">
 
 <dom-module id="speaker-list">
-    <style>
+    <style include="iron-flex">
         :host {
             display: block;
         }
@@ -13,6 +14,10 @@
 			position: fixed;
 			right: 1.5em;
 			bottom: 2em;
+        }
+
+        paper-icon-button {
+            color: var(--light-theme-secondary-color);
         }
 
         paper-item {
@@ -25,7 +30,7 @@
         }
 
         .avatar {
-			margin: 0.5em 1em;
+			margin: 0.5em 1em 0.5em 0;
 			width: 3em;
 			height: 3em;
 			border-radius: 50%;
@@ -42,11 +47,27 @@
         <p hidden="[[_isEmpty(speakers.length)]]">空空如也~</p>
 
         <template is="dom-repeat" items="[[speakers]]" as="speaker">
-            <paper-item class="flex horizontal" name="[[speaker.__firebaseKey__]]" on-tap="editCover">
-                <div class="avatar" style="background-image: url([[speaker.avatar.URL]]);"></div>
-				<div name="[[speaker.__firebaseKey__]]">[[speaker.name]]</div>
+            <paper-item>
+                <div class="flex horizontal layout" on-tap="editCover"
+                     data-key="[[speaker.__firebaseKey__]]">
+                    <div class="avatar"
+                         style$="background-image: url([[speaker.avatar.URL]]);"></div>
+    				<div>[[speaker.name]]</div>
+				</div>
+				<paper-icon-button icon="delete" on-tap="delCover"
+				                   data-key="[[speaker.__firebaseKey__]]"></paper-icon-button>
 			</paper-item>
         </template>
+
+        <paper-dialog id="deleteConfirm" modal>
+            <div>
+                確定刪除？
+            </div>
+            <div class="buttons">
+                <paper-button dialog-dismiss>取消</paper-button>
+                <paper-button dialog-confirm>確認</paper-button>
+            </div>
+        </paper-dialog>
         <paper-fab icon="add" on-tap="newCover"></paper-fab>
     </template>
 
@@ -76,20 +97,24 @@
                 return !!length;
             },
 
-            editCover: function(e) {
+            editCover: function() {
                 // update the speaker's url for editor
-                this.speakerUrl = this.dataUrl + "/" + e.target.name;
+                this.speakerUrl = this.dataUrl + "/" + Polymer.dom(event).localTarget.dataKey;
                 this.page = "editor";
             },
 
             newCover: function() {
                 var last = this.speakers.length;
-                document.querySelector("firebase-collection").add(this.schema);
+                this.$$("firebase-collection").add(this.schema);
 
                 // update the newst speaker's id
                 this.set("speakers." + last + ".id", this.speakers[last].__firebaseKey__);
                 this.speakerUrl = this.dataUrl + "/" + this.speakers[last].__firebaseKey__;
                 this.page = "editor";
+            },
+
+            delCover: function() {
+                this.$.deleteConfirm.open();
             }
         });
     </script>
