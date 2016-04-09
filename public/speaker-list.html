@@ -30,7 +30,6 @@
         }
 
         .avatar {
-			margin: 0.5em 1em 0.5em 0;
 			width: 3em;
 			height: 3em;
 			border-radius: 50%;
@@ -46,17 +45,16 @@
 
         <p hidden="[[_isEmpty(speakers.length)]]">空空如也~</p>
 
-        <template is="dom-repeat" items="[[speakers]]" as="speaker">
-            <paper-item>
-                <div class="flex horizontal layout" on-tap="editCover"
-                     data-key="[[speaker.__firebaseKey__]]">
-                    <div class="avatar"
-                         style$="background-image: url([[speaker.avatar.URL]]);"></div>
-    				<div>[[speaker.name]]</div>
-				</div>
-				<paper-icon-button icon="delete" on-tap="delCover"
-				                   data-key="[[speaker.__firebaseKey__]]"></paper-icon-button>
-			</paper-item>
+        <template is="dom-repeat" items="[[speakers]]" as="speaker" role="listbox">
+            <paper-icon-item data-key="[[speaker.__firebaseKey__]]">
+                <div class="avatar" on-tap="editCover" item-icon
+                     style$="background-image: url([[speaker.avatar.URL]]);"></div>
+                <paper-item-body on-tap="editCover" two-line>
+                    <div>[[speaker.name]]</div>
+                    <div secondary>學校名</div>
+                </paper-item-body>
+                <paper-icon-button icon="delete" on-tap="delCover"></paper-icon-button>
+            </paper-icon-item>
         </template>
 
         <paper-dialog id="deleteConfirm" modal>
@@ -97,9 +95,9 @@
                 return !!length;
             },
 
-            editCover: function() {
+            editCover: function(e) {
                 // update the speaker's url for editor
-                this.speakerUrl = this.dataUrl + "/" + Polymer.dom(event).localTarget.dataKey;
+                this.speakerUrl = this.dataUrl + "/" + e.target.offsetParent.dataKey;
                 this.page = "editor";
             },
 

@@ -179,41 +179,38 @@
 				function hmImage(element) {
 					var hm = new Hammer.Manager(element);
 					
-					function onPan(e) {
-						e.preventDefault();
-						var img = self.speaker[e.target.id]; // e.target.id will be either "background" or "avatar"
-
-						if (e.type === "panend") {
-							img.Top = e.target.offsetTop;
-							img.Left = e.target.offsetLeft;
-							self.notifyPath("speaker." + e.target.id, img);
-						}
-						else {
-							e.target.style.top = img.Top + e.deltaY + "px";
-							e.target.style.left = img.Left + e.deltaX + "px";
-						}
-					}
-					
-					function onPinch(e) {
+					function gestureEnd(e) {
 						e.preventDefault();
 						var img = self.speaker[e.target.id];
-
-						if (e.type === "pinchend") {
-							img.Width = e.target.offsetWidth * e.scale;
-							self.notifyPath("speaker." + e.target.id, img);
-						}
-						else {
-							e.target.style.width = img.Width * e.scale + "px";
-						}
+						img.Width = e.target.offsetWidth;
+						img.Top = e.target.offsetTop;
+						img.Left = e.target.offsetLeft;
+						self.notifyPath("speaker." + e.target.id, img);
+					}
+					
+					function gestureOn(e) {
+						e.preventDefault();
+						var img = self.speaker[e.target.id];
+						e.target.style.width = parseInt(img.Width * e.scale, 10) + "px";
+						e.target.style.top = parseInt(e.center.y - (e.scale * (e.center.y - img.Top)) + e.deltaY, 10) + "px";
+						e.target.style.left = parseInt(e.center.x - (e.scale * (e.center.x - img.Left)) + e.deltaX, 10) + "px";
 					}
 					
 					function onMousewheel(e) {
 						e.preventDefault();
-						e.center = {
-							x: e.offsetX,
-							y: e.offsetY
+						var wheelEvent = {
+							deltaX: 0,
+							deltaY: 0,
+							center: {
+								x: e.offsetX + e.target.offsetLeft,
+								y: e.offsetY + e.target.offsetTop
+							},
+							scale: (e.deltaY > 0)? 1.05 : (1 / 1.05),
+							target: e.target,
+							preventDefault: function(){}
 						};
-						e.scale = (e.deltaY > 0)? 1.05 : (1 / 1.05);
+						gestureOn(wheelEvent);
+						gestureEnd(wheelEvent);
 					}
 
 					element.addEventListener("wheel", onMousewheel, false);
@@ -221,8 +218,8 @@
 					hm.add(new Hammer.Pan({threshold: 0, pointers: 0}));
 					hm.add(new Hammer.Pinch({threshold: 0})).recognizeWith(hm.get("pan"));
 
-					hm.on("panmove panend", onPan);
-					hm.on("pinchstart pinchmove pinchend", onPinch);
+					hm.on("panmove pinchin pinchout", gestureOn);
+					hm.on("panend", gestureEnd);
 				}
 				
 				hmImage(imgBackground);
