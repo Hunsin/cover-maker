@@ -1,4 +1,4 @@
-"use strice";
+"use strict";
 var express = require("express"),
 	router = express.Router(),
 	multer = require("multer"),
