@@ -10,10 +10,12 @@
     "webshot": "^0.18.0"
   },
   "devDependencies": {
-    "bower": "^1.7.7"
+    "bower": "^1.7.7",
+    "vulcanize": "^1.14.8"
   },
   "scripts": {
     "build": "mkdir public/uploads && cd public && bower install",
+    "vulcanize": "vulcanize --inline-scripts --inline-css --strip-comments public/elements-list.html > public/elements.html",
     "start": "node server.js"
   },
   "author": "Hunsin",

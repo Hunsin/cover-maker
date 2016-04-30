@@ -3,9 +3,12 @@
 	<head>
 		<meta charset="UTF8">
 		<title>IOH Cover Maker</title>
-		<link rel="import" href="/elements-list.html">
+		<link rel="icon" href="/assets/favicon.ico">
+		
+		<!-- This should be the only html import since the project uses vulcanize to reduce HTTP requests. 
+			 Other imports should go in elements-list.html -->
+		<link rel="import" href="/elements.html">
 		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-
 		<style is="custom-style" include="iron-flex iron-positioning">
 			:root {
 				--paper-toolbar-color: #FFF;

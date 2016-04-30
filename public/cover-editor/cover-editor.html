@@ -1,4 +1,4 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="hammer.html">
 <dom-module id="cover-editor">
 	<style>
@@ -178,7 +178,7 @@
 
 				function hmImage(element) {
 					var hm = new Hammer.Manager(element);
-					
+
 					function gestureEnd(e) {
 						e.preventDefault();
 						var img = self.speaker[e.target.id];
@@ -187,7 +187,7 @@
 						img.Left = e.target.offsetLeft;
 						self.notifyPath("speaker." + e.target.id, img);
 					}
-					
+
 					function gestureOn(e) {
 						e.preventDefault();
 						var img = self.speaker[e.target.id];
@@ -195,7 +195,7 @@
 						e.target.style.top = parseInt(e.center.y - (e.scale * (e.center.y - img.Top)) + e.deltaY, 10) + "px";
 						e.target.style.left = parseInt(e.center.x - (e.scale * (e.center.x - img.Left)) + e.deltaX, 10) + "px";
 					}
-					
+
 					function onMousewheel(e) {
 						e.preventDefault();
 						var wheelEvent = {
@@ -221,7 +221,7 @@
 					hm.on("panmove pinchin pinchout", gestureOn);
 					hm.on("panend", gestureEnd);
 				}
-				
+
 				hmImage(imgBackground);
 				hmImage(imgAvatar);
 			},
