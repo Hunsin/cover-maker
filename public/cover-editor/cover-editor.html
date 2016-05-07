@@ -247,23 +247,18 @@
 			sendImg: function(e) {
 				var formData = new FormData(),
 					xhr = new XMLHttpRequest(),
-					self = this,
 					img = e.target.files[0],
 					imgName = e.target.name, // avatar or background
-					fileName = imgName + "_" + this.speaker.id + img.type.replace("image/", ".");
+					userId = this.speaker.id;
 
-				formData.append("filename", fileName);
+				// return if not select any image
+				if (!img) return;
+
 				formData.append("img", img);
 
-				xhr.open("POST", "/upload", true);
-				xhr.onload = function(e) {
-					if (this.status == 200) {
-						// path will be "speaker.avatar.URL" or "speaker.background.URL"
-						self.set("speaker." + imgName + ".URL", this.response);
-					}
-					else {
-						console.log("error");
-					}
+				xhr.open("POST", "/upload/" + userId + "/" + imgName, true);
+				xhr.onload = function() {
+					if (this.status != 200) console.log("error");
 				};
 				xhr.send(formData);
 			}
