@@ -2,6 +2,7 @@
 var express = require("express"),
 	router = express.Router(),
 	firebase = require("firebase"),
+	fireListener = new firebase("https://ioh-cover-maker.firebaseio.com/speakers/"),
 	fs = require("fs");
 
 var multer = require("multer"),
@@ -18,6 +19,22 @@ var multer = require("multer"),
 	}),
 	upload = multer({storage: storage});
 
+function removeImg(url) {
+	if (url != "/assets/avatar.png" && url != "/assets/instruction.png") {
+		fs.unlink(`public${url}`, function(err) {
+			if (err) console.log(`Remove Image ERROR: location: ${url}`);
+		});
+	}
+}
+
+// handle removed speaker images
+fireListener.on("child_removed", function(snapshot) {
+	let speaker = snapshot.val();
+
+	removeImg(speaker.avatar.URL);
+	removeImg(speaker.background.URL);
+});
+
 // handle upload files
 router.post("/upload/:userId/:imgName", upload.single("img"), function (req, res) {
 	let userId = req.params.userId,
@@ -29,9 +46,7 @@ router.post("/upload/:userId/:imgName", upload.single("img"), function (req, res
 
 	ref.once("value", function(data) {
 		ref.set(`/uploads/${req.file.filename}`);
-		fs.unlink(`public${data.val()}`, function(err) {
-			if (err) console.log(`ERROR: userID: ${userId}, img: ${data.val()}`);
-		});
+		removeImg(data.val());
 	});
 	res.end();
 });

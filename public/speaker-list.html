@@ -1,4 +1,5 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="bower_components/paper-item/paper-item.html">
@@ -44,7 +45,7 @@
             location="{{dataUrl}}"
             data="{{speakers}}"></firebase-collection>
 
-        <p hidden="[[_isEmpty(speakers.length)]]">空空如也~</p>
+        <p class="self-center" hidden="[[_isEmpty(speakers.length)]]">載入中…</p>
 
         <template is="dom-repeat" items="[[speakers]]" as="speaker" role="listbox">
             <paper-icon-item data-key="[[speaker.__firebaseKey__]]">
@@ -52,21 +53,23 @@
                      style$="background-image: url([[speaker.avatar.URL]]);"></div>
                 <paper-item-body on-tap="editCover" two-line>
                     <div>[[speaker.name]]</div>
-                    <div secondary>學校名</div>
+                    <div secondary>[[speaker.experience.0]]</div>
                 </paper-item-body>
-                <paper-icon-button icon="delete" on-tap="delCover"></paper-icon-button>
+                <paper-icon-button icon="delete" on-tap="delConfirm"></paper-icon-button>
             </paper-icon-item>
         </template>
 
-        <paper-dialog id="deleteConfirm" modal>
+        <paper-dialog id="deleteConfirm" modal always-on-top
+                      on-iron-overlay-closed="delCover">
             <div>
-                確定刪除？
+                確定刪除<span>{{_findNameByKey(delKey)}}</span>？
             </div>
             <div class="buttons">
                 <paper-button dialog-dismiss>取消</paper-button>
                 <paper-button dialog-confirm>確認</paper-button>
             </div>
         </paper-dialog>
+
         <paper-fab icon="add" on-tap="newCover"></paper-fab>
     </template>
 
@@ -89,11 +92,23 @@
                 page: {
                     type: String,
                     notify: true
+                },
+                delKey: {
+                    type: String,
+                    notify: true
                 }
             },
 
             _isEmpty: function(length) {
                 return !!length;
+            },
+            
+            _findNameByKey: function(id) {
+                var speaker = this.speakers.filter(function(obj) {
+                    return obj.id === id;
+                });
+                console.log(speaker);
+                return speaker[0].name;
             },
 
             editCover: function(e) {
@@ -112,8 +127,13 @@
                 this.page = "editor";
             },
 
-            delCover: function() {
+            delConfirm: function(e) {
+                this.delKey = e.target.offsetParent.offsetParent.dataKey;
                 this.$.deleteConfirm.open();
+            },
+            
+            delCover: function(e) {
+                if (e.detail.confirmed === true) this.$$("firebase-collection").removeByKey(this.delKey);
             }
         });
     </script>
