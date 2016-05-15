@@ -5,6 +5,7 @@ var express = require("express"),
 // middleware
 app.use(express.static(__dirname + "/public"));
 app.use(require("./upload"));
+app.use(require("./export"));
 
 // 404 error handler
 app.use(function(req, res, next) {
