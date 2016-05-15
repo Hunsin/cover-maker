@@ -135,11 +135,14 @@
 				   style$="left: {{speaker.avatarPosition}}px; color: {{speaker.locationColor}}">
 			<div id="experience-box">
 				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
-				<input class="text-red" name="text_red" type="radio" value="0" checked>
+				<input class="text-red" name="text_red" type="radio" value=1
+					   checked="{{_isFocus(speaker.experienceFocus, 1)}}" on-change="_changeFocus">
 				<input class="experience-text" type="text" value={{speaker.experience.0::input}} placeholder="輸入學經歷 如：MIT Media Lab, Master of Science Media Arts and Science 碩士, 20xx">
-				<input class="text-red" name="text_red" type="radio" value="1">
+				<input class="text-red" name="text_red" type="radio" value=2
+					   checked="{{_isFocus(speaker.experienceFocus, 2)}}" on-change="_changeFocus">
 				<input class="experience-text" type="text" value={{speaker.experience.1::input}} placeholder="輸入學經歷">
-				<input class="text-red" name="text_red" type="radio" value="2">
+				<input class="text-red" name="text_red" type="radio" value=3
+					   checked="{{_isFocus(speaker.experienceFocus, 3)}}" on-change="_changeFocus">
 				<input class="experience-text" type="text" value={{speaker.experience.2::input}} placeholder="輸入學經歷">
 			</div>
 		</div>
@@ -155,7 +158,7 @@
 			地點文字顏色：
 			<input type="button" value="白色" on-tap="toggleTextColor">
 			<input type="button" value="黑色" on-tap="toggleTextColor">
-			<input type="submit" value="輸出海報！" on-tap="">
+			<a href$="/export/[[speaker.id]]" target="_blank">輸出海報！</a>
 		</div>
 	</template>
 	
@@ -261,6 +264,14 @@
 					if (this.status != 200) console.log("error");
 				};
 				xhr.send(formData);
+			},
+
+			_isFocus: function(num1, num2) {
+				return num1 == num2;
+			},
+
+			_changeFocus: function(e) {
+				this.set("speaker.experienceFocus", e.target.value);
 			}
 		});
 	</script>
