@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="UTF8">
+        <style type="text/css">
+            * {
+    			box-sizing: border-box;
+				font-family: "Noto Sans", "Noto Sans CJK TC";
+				font-size: 32px;
+    		}
+    		
+    		body {
+    			margin: 0;
+    		}
+
+			.experience-text {
+				margin: 0 60px 0 480px;
+				border: none;
+				padding: 0;
+			    
+			    width: 1380px;
+				height: 46px;
+			    line-height: 46px;
+				overflow: hidden;
+			    
+			    text-align: right;
+			}
+
+			.experience-text:nth-child([expFocus]) {
+			    color: red;
+			}
+
+			.img-area {
+				overflow: hidden;
+			}
+
+			.img-area img {
+				position: relative;
+				height: auto;
+			}
+
+            #cover-background {
+    			position: relative;
+    	
+    			width: inherit;
+    			height: 860px;
+    		}
+    
+    		#cover-container {
+    			display: block;
+    			position: relative;
+    			margin: 0 auto;
+    			width: 1920px;
+    			height: 1080px;
+    		}
+    		
+    		#cover-location {
+    			position: absolute;
+    			top: 780px;
+    			
+    			width: 320px;
+    			height: 80px;
+    			line-height: 80px;
+    			
+    			text-align: center;
+    			background-color: transparent;
+    		}
+    		
+    		#experience-box {
+    		    position: absolute;
+    		    top: 859px;
+				padding-top: 22px;
+    
+    			display: -webkit-flex;
+    			display: -ms-flexbox;
+    			display: flex;
+    			-webkit-flex-flow: column;
+    			flex-flow: column;
+    			align-content: flex-start;
+    		    width: inherit;
+    		    height: 223px;
+    			
+    		    background-image: url(https://ioh-cover-maker-hunsin.c9users.io/cover-editor/poster-brand.png);
+    		    background-size: cover;
+    		}
+    		
+    		#cover-avatar {
+    			position: absolute;
+    			top: 460px;
+    			
+    			width: 320px;
+    			height: 320px;
+    			border: 10px solid;
+    			border-color: #FFF;
+    		}
+        </style>
+    </head>
+    <body>
+        <div id="cover-container">
+
+			<!-- background image -->
+			<div class="img-area" id="cover-background">
+				<img id="background" src="https://ioh-cover-maker-hunsin.c9users.io[backUrl]"
+					 style="top: [backTop]px; left: [backLeft]px; width: [backWidth]px">
+			</div>
+
+			<!-- avatar image -->
+			<div class="img-area" id="cover-avatar" style="left: [avaPos]px;"> 
+				<img id="avatar" src="https://ioh-cover-maker-hunsin.c9users.io[avaUrl]"
+					 style="top: [avaTop]px; left: [avaLeft]px; width: [avaWidth]px">
+			</div>
+
+			<!-- location -->
+			<div id="cover-location" style="left: [avaPos]px; color: [locColor]">[loc]</div>
+			<div id="experience-box">
+				<div class="experience-text">[name]</div>
+				<div class="experience-text">[expI]</div>
+				<div class="experience-text">[expII]</div>
+				<div class="experience-text">[expIII]</div>
+			</div>
+		</div>
+    </body>
+</html>
