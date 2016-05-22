@@ -36,7 +36,7 @@ fireListener.on("child_removed", function(snapshot) {
 });
 
 // handle upload files
-router.post("/upload/:userId/:imgName", upload.single("img"), function (req, res) {
+router.post("/upload/:userId/:imgName", upload.single("img"), function(req, res) {
 	let userId = req.params.userId,
 		imgName = req.params.imgName,
 		ref = new firebase(`https://ioh-cover-maker.firebaseio.com/speakers/${userId}/${imgName}/URL`);

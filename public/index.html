@@ -15,10 +15,9 @@
 				--primary-color: var(--paper-red-500);
 				--accent-color: var(--paper-orange-500);
 				--paper-fab-keyboard-focus-background: var(--paper-orange-700);
-			}
-
-			body {
-				@apply(--paper-font-common-base);
+				--paper-font-common-base: {
+					font-family: "Roboto", "Noto", "Helvetica", "Microsoft JhengHei UI";
+				}
 			}
 
 			paper-fab {
@@ -34,7 +33,7 @@
 		<template is="dom-bind" id="app">
 			<paper-header-panel>
 				<paper-toolbar>
-					<paper-icon-button noink icon="arrow-back" hidden="[[_isList(page)]]" on-tap="backToList"></paper-icon-button>
+					<paper-icon-button noink icon="[[_isList(page)]]" on-tap="backToList"></paper-icon-button>
 					<div class="title">IOH Cover Maker</div>
 				</paper-toolbar>
 				<iron-pages attr-for-selected="page-route" selected="{{page}}">

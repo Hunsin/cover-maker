@@ -45,7 +45,7 @@
             location="{{dataUrl}}"
             data="{{speakers}}"></firebase-collection>
 
-        <p class="self-center" hidden="[[_isEmpty(speakers.length)]]">載入中…</p>
+        <p style="text-align: center" hidden="[[_isEmpty(speakers.length)]]">載入中…</p>
 
         <template is="dom-repeat" items="[[speakers]]" as="speaker" role="listbox">
             <paper-icon-item data-key="[[speaker.__firebaseKey__]]">
@@ -62,7 +62,7 @@
         <paper-dialog id="deleteConfirm" modal always-on-top
                       on-iron-overlay-closed="delCover">
             <div>
-                確定刪除<span>{{_findNameByKey(delKey)}}</span>？
+                確定刪除<strong>{{_findNameByKey(delKey)}}</strong>？
             </div>
             <div class="buttons">
                 <paper-button dialog-dismiss>取消</paper-button>

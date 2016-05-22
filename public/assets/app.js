@@ -15,6 +15,6 @@
 		app.page = "list";
 	};
 	app._isList = function(page) {
-		return page === "list";
+		return (page === "list")? "menu" : "arrow-back";
 	};
 })();
