@@ -182,6 +182,7 @@
 				function hmImage(element) {
 					var hm = new Hammer.Manager(element);
 
+					// update new offset value to image
 					function gestureEnd(e) {
 						e.preventDefault();
 						var img = self.speaker[e.target.id];
@@ -191,14 +192,26 @@
 						self.notifyPath("speaker." + e.target.id, img);
 					}
 
+					// center position assigned by Hammer.js is relative to window,
+					// we convert it to which relative to its parent element
 					function gestureOn(e) {
 						e.preventDefault();
+						var gestureEvent = e;
+						gestureEvent.center = {
+							x: e.center.x - e.target.parentElement.getBoundingClientRect().left,
+							y: e.center.y - e.target.parentElement.getBoundingClientRect().top
+						};
+						imgZoom(gestureEvent);
+					}
+
+					function imgZoom(e) {
 						var img = self.speaker[e.target.id];
 						e.target.style.width = parseInt(img.Width * e.scale, 10) + "px";
 						e.target.style.top = parseInt(e.center.y - (e.scale * (e.center.y - img.Top)) + e.deltaY, 10) + "px";
 						e.target.style.left = parseInt(e.center.x - (e.scale * (e.center.x - img.Left)) + e.deltaX, 10) + "px";
 					}
 
+					// deltaX, deltaY are read-only in wheel event, so we create new event object
 					function onMousewheel(e) {
 						e.preventDefault();
 						var wheelEvent = {
@@ -212,7 +225,7 @@
 							target: e.target,
 							preventDefault: function(){}
 						};
-						gestureOn(wheelEvent);
+						imgZoom(wheelEvent);
 						gestureEnd(wheelEvent);
 					}
 
