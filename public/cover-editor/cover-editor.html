@@ -27,7 +27,7 @@
 			margin-right: 30px;
 		}
 		
-		input {
+		input, textarea {
 			border: none;
 			padding: 0;
 			
@@ -73,7 +73,34 @@
 			width: 960px;
 			height: 540px;
 		}
+
+		#cover-info {
+		    position: absolute;
+		    top: 222px;
+		}
 		
+		#cover-info textarea {
+			padding: 8px;
+			margin: 8px;
+			
+		    width: calc(100% - 16px);
+		    height: calc(100% - 16px);
+		    line-height: 24px;
+		    
+		    resize: none;
+		    background-color: rgba(255, 255, 255, 0.4);
+		}
+
+		#info-ctrl {
+			position: absolute;
+			bottom: 0;
+
+			width: 24px;
+			height: 24px;
+
+			background-color: red;
+		}
+
 		#cover-location {
 			position: absolute;
 			top: 390px;
@@ -132,7 +159,15 @@
 
 			<!-- location -->
 			<input id="cover-location" type="text" value="{{speaker.location::input}}" placeholder="地點：請輸入地點"
-				   style$="left: {{speaker.avatarPosition}}px; color: {{speaker.locationColor}}">
+				   style$="left: [[speaker.avatarPosition]]px; color: [[speaker.locationColor]]">
+
+			<!-- info -->
+			<div id="cover-info"
+				 style$="[[_infoPosition(speaker.avatarPosition)]] width: [[speaker.info.Width]]px; height: [[speaker.info.Height]]px;">
+				<textarea value="{{speaker.info.Text::input}}" placeholder="嗨～"></textarea>
+				<div id="info-ctrl" style$="[[_infoCtrlPosition(speaker.avatarPosition)]]"></div>
+			</div>
+
 			<div id="experience-box">
 				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
 				<input class="text-red" name="text_red" type="radio" value=1
@@ -177,8 +212,11 @@
 
 				var self = this,
 					imgBackground = this.querySelector("#background"),
-					imgAvatar = this.querySelector("#avatar");
+					imgAvatar = this.querySelector("#avatar"),
+					infoContainer = this.querySelector("#cover-info"),
+					infoCtrl = this.querySelector("#info-ctrl");
 
+				// image pan, zoom by touchscreen or mouse
 				function hmImage(element) {
 					var hm = new Hammer.Manager(element);
 
@@ -238,8 +276,33 @@
 					hm.on("panend", gestureEnd);
 				}
 
+				// info box resize by paning an element at the corner
+				function hmInfo() {
+					var hm = new Hammer.Manager(infoCtrl);
+
+					function infoResize(e) {
+						e.preventDefault();
+						var dir = (self.speaker.avatarPosition == 768)? -1 : 1;
+						infoContainer.style.width = self.speaker.info.Width + (dir * (parseInt(e.deltaX / 16, 10) * 16)) + "px";
+						infoContainer.style.height = self.speaker.info.Height + (parseInt(e.deltaY / 16, 10) * 16) + "px";
+					}
+					
+					function infoResizeEnd(e) {
+						e.preventDefault();
+						var info = self.speaker.info;
+						info.Width = infoContainer.offsetWidth;
+						info.Height = infoContainer.offsetHeight;
+						self.notifyPath("speaker.info", info);
+					}
+
+					hm.add(new Hammer.Pan({threshold: 0, pointers: 0}));
+					hm.on("panmove", infoResize);
+					hm.on("panend", infoResizeEnd);
+				}
+
 				hmImage(imgBackground);
 				hmImage(imgAvatar);
+				hmInfo();
 			},
 
 			togglePosition: function(e) {
@@ -279,7 +342,15 @@
 				xhr.send(formData);
 			},
 
-			_isFocus: function(num1, num2) {
+			_infoPosition: function(avatarPosition) {
+				return (avatarPosition == 768)? "right: 204px;" : "left: 208px;";
+			},
+
+			_infoCtrlPosition: function(avatarPosition) {
+				return (avatarPosition == 768)? "left: 0; cursor: sw-resize; border-top-right-radius: 50%;" : "right: 0; cursor: se-resize; border-top-left-radius: 50%;";
+			},
+
+			_isFocus: function(num1, num2) { 
 				return num1 == num2;
 			},
 

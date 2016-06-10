@@ -19,6 +19,7 @@ router.get("/export/:userId", function(req, res) {
     let ref = new firebase(`https://ioh-cover-maker.firebaseio.com/speakers/${req.params.userId}`);
     ref.once("value", function(snapshot) {
         let speaker = snapshot.val(),
+            infoPos = (speaker.avatarPosition == 768)? "right: 408px;" : "left: 416px;",
             shot = template.replace("[avaLeft]", speaker.avatar.Left * 2)
                            .replace("[avaTop]", speaker.avatar.Top * 2)
                            .replace("[avaUrl]", speaker.avatar.URL)
@@ -32,6 +33,10 @@ router.get("/export/:userId", function(req, res) {
                            .replace("[expII]", speaker.experience[1])
                            .replace("[expIII]", speaker.experience[2])
                            .replace("[expFocus]", ++speaker.experienceFocus)
+                           .replace("[infoWidth]", speaker.info.Width * 2)
+                           .replace("[infoHeight]", speaker.info.Height * 2)
+                           .replace("[infoText]", speaker.info.Text)
+                           .replace("[infoPos]", infoPos)
                            .replace("[loc]", speaker.location)
                            .replace("[locColor]", speaker.locationColor)
                            .replace("[name]", speaker.name);

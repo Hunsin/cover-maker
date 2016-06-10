@@ -38,6 +38,16 @@
 				position: relative;
 				height: auto;
 			}
+    		
+    		#cover-avatar {
+    			position: absolute;
+    			top: 460px;
+    			
+    			width: 320px;
+    			height: 320px;
+    			border: 10px solid;
+    			border-color: #FFF;
+    		}
 
             #cover-background {
     			position: relative;
@@ -53,6 +63,22 @@
     			width: 1920px;
     			height: 1080px;
     		}
+
+			#cover-info {
+			    position: absolute;
+			    top: 444px;
+			}
+			
+			#cover-info div {
+				padding: 16px;
+				margin: 16px;
+				
+			    width: calc(100% - 32px);
+			    height: calc(100% - 32px);
+			    line-height: 48px;
+			    
+			    background-color: rgba(255, 255, 255, 0.4);
+			}
     		
     		#cover-location {
     			position: absolute;
@@ -83,16 +109,6 @@
     		    background-image: url(https://ioh-cover-maker-hunsin.c9users.io/cover-editor/poster-brand.png);
     		    background-size: cover;
     		}
-    		
-    		#cover-avatar {
-    			position: absolute;
-    			top: 460px;
-    			
-    			width: 320px;
-    			height: 320px;
-    			border: 10px solid;
-    			border-color: #FFF;
-    		}
         </style>
     </head>
     <body>
@@ -112,6 +128,13 @@
 
 			<!-- location -->
 			<div id="cover-location" style="left: [avaPos]px; color: [locColor]">[loc]</div>
+
+			<!-- info -->
+			<div id="cover-info"
+				 style="[infoPos] width: [infoWidth]px; height: [infoHeight]px;">
+				<div>[infoText]</div>
+			</div>
+
 			<div id="experience-box">
 				<div class="experience-text">[name]</div>
 				<div class="experience-text">[expI]</div>

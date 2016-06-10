@@ -15,6 +15,11 @@
     "experience": ["", "", ""],
     "experienceFocus": 0,
     "id": "",
+    "info": {
+        "Width": 288,
+        "Height": 176,
+        "Text": ""
+    },
     "location": "",
     "locationColor": "black",
     "name": "點我輸入姓名"
