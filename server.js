@@ -1,6 +1,13 @@
 "use strict";
 var express = require("express"),
-    app = express();
+	firebase = require("firebase"),
+	app = express(),
+	config = require("./config");
+
+firebase.initializeApp({
+        databaseURL: config.databaseURL,
+        serviceAccount: config.serviceAccount
+});
 
 // middleware
 app.use(express.static(__dirname + "/public"));
@@ -18,4 +25,4 @@ app.use(function(err, req, res, next) {
 	res.status(500);
 });
 
-app.listen(process.env.PORT, process.env.IP);
+app.listen(config.port);

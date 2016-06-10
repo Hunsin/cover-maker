@@ -2,8 +2,9 @@
 var express = require("express"),
 	router = express.Router(),
 	firebase = require("firebase"),
-	fireListener = new firebase("https://ioh-cover-maker.firebaseio.com/speakers/"),
-	fs = require("fs");
+	fs = require("fs"),
+	db = firebase.database(),
+	dbListener = db.ref("speakers");
 
 var multer = require("multer"),
 	storage = multer.diskStorage({
@@ -28,7 +29,7 @@ function removeImg(url) {
 }
 
 // handle removed speaker images
-fireListener.on("child_removed", function(snapshot) {
+dbListener.on("child_removed", function(snapshot) {
 	let speaker = snapshot.val();
 
 	removeImg(speaker.avatar.URL);
@@ -39,7 +40,7 @@ fireListener.on("child_removed", function(snapshot) {
 router.post("/upload/:userId/:imgName", upload.single("img"), function(req, res) {
 	let userId = req.params.userId,
 		imgName = req.params.imgName,
-		ref = new firebase(`https://ioh-cover-maker.firebaseio.com/speakers/${userId}/${imgName}/URL`);
+		ref = db.ref(`speakers/${userId}/${imgName}/URL`);
 	
 	// prevent bad request
 	if (imgName != "avatar" && imgName != "background") res.status(400).end();

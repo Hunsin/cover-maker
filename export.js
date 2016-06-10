@@ -1,22 +1,23 @@
 "use strict";
 var express = require("express"),
-    router = express.Router(),
-    firebase = require("firebase"),
-    webshot = require("webshot"),
-    fs = require("fs");
+	router = express.Router(),
+	firebase = require("firebase"),
+	webshot = require("webshot"),
+	fs = require("fs");
 
-var options = {
-        screenSize: {
-            width: 1920,
-            height: 1080
-        },
-        quality: 90,
-        siteType: "html"
-    },
-    template = fs.readFileSync("screenshot.html", "utf8");
+var db = firebase.database(),
+	options = {
+		screenSize: {
+			width: 1920,
+			height: 1080
+		},
+		quality: 90,
+		siteType: "html"
+	},
+	template = fs.readFileSync("screenshot.html", "utf8");
 
 router.get("/export/:userId", function(req, res) {
-    let ref = new firebase(`https://ioh-cover-maker.firebaseio.com/speakers/${req.params.userId}`);
+    let ref = db.ref(`speakers/${req.params.userId}`);
     ref.once("value", function(snapshot) {
         let speaker = snapshot.val(),
             infoPos = (speaker.avatarPosition == 768)? "right: 408px;" : "left: 416px;",
