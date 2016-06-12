@@ -5,13 +5,13 @@ var express = require("express"),
 	config = require("./config");
 
 firebase.initializeApp({
-        databaseURL: config.databaseURL,
-        serviceAccount: config.serviceAccount
+	databaseURL: config.databaseURL,
+	serviceAccount: config.serviceAccount
 });
 
 // middleware
 app.use(express.static(__dirname + "/public"));
-app.use(require("./upload"));
+app.use(require("./storage"));
 app.use(require("./export"));
 
 // 404 error handler

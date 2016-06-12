@@ -22,22 +22,32 @@ var multer = require("multer"),
 
 function removeImg(url) {
 	if (url != "/assets/avatar.png" && url != "/assets/instruction.png") {
-		fs.unlink(`public${url}`, function(err) {
-			if (err) console.log(`Remove Image ERROR: location: ${url}`);
+
+		// check if accessible
+		fs.access(`public${url}`, fs.W_OK, (err) => {
+			if (!err) {
+
+				// remove file
+				fs.unlink(`public${url}`, (err) => {
+					if (err) console.log(err);
+				});
+			}
+			else console.log(err);
 		});
 	}
 }
 
 // handle removed speaker images
-dbListener.on("child_removed", function(snapshot) {
+dbListener.on("child_removed", (snapshot) => {
 	let speaker = snapshot.val();
 
 	removeImg(speaker.avatar.URL);
 	removeImg(speaker.background.URL);
+	removeImg(`/uploads/cover${speaker.id}.jpeg`);
 });
 
 // handle upload files
-router.post("/upload/:userId/:imgName", upload.single("img"), function(req, res) {
+router.post("/upload/:userId/:imgName", upload.single("img"), (req, res) => {
 	let userId = req.params.userId,
 		imgName = req.params.imgName,
 		ref = db.ref(`speakers/${userId}/${imgName}/URL`);
@@ -45,7 +55,8 @@ router.post("/upload/:userId/:imgName", upload.single("img"), function(req, res)
 	// prevent bad request
 	if (imgName != "avatar" && imgName != "background") res.status(400).end();
 
-	ref.once("value", function(data) {
+	// set new image url and remove the old one
+	ref.once("value", (data) => {
 		ref.set(`/uploads/${req.file.filename}`);
 		removeImg(data.val());
 	});
