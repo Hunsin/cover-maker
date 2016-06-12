@@ -14,6 +14,8 @@
 				--paper-toolbar-color: #FFF;
 				--primary-color: var(--paper-red-500);
 				--accent-color: var(--paper-orange-500);
+				--paper-input-container-focus-color: var(--paper-toolbar-color);
+				--paper-input-container-input-color: var(--paper-toolbar-color);
 				--paper-fab-keyboard-focus-background: var(--paper-orange-700);
 				--paper-font-common-base: {
 					font-family: "Roboto", "Noto", "Helvetica", "Microsoft JhengHei UI";
@@ -35,23 +37,30 @@
 				<paper-toolbar>
 					<paper-icon-button noink icon="[[_isList(page)]]" on-tap="backToList"></paper-icon-button>
 					<div class="title">IOH Cover Maker</div>
+					<paper-input label="搜尋" no-label-float value="{{search::input}}"></paper-input>
 				</paper-toolbar>
 				<iron-pages attr-for-selected="page-route" selected="{{page}}">
 
 				<!-- speakers list -->
 					<section page-route="list">
+						<firebase-collection
+							location="https://ioh-cover-maker.firebaseio.com/speakers"
+							data="{{speakers}}"
+							order-by-child="name"
+							start-at="[[search]]"
+							end-at="[[_searchRange(search)]]"></firebase-collection>
 						<speaker-list
-							data-url="https://ioh-cover-maker.firebaseio.com/speakers"
-							speaker-url="{{speakerUrl}}"
-							schema="[[schema]]"
+							speakers="{{speakers}}"
+							speaker-id="{{speakerId}}"
 							page="{{page}}"></speaker-list>
+						<paper-fab icon="add" on-tap="newCover"></paper-fab>
 					</section>
 					
 				<!-- cover editor panel -->
 					<section page-route="editor">
 						<firebase-document 
-							location={{speakerUrl}}
-							data={{speaker}}></firebase-document>
+							location="{{getSpeakerUrl(speakerId)}}"
+							data="{{speaker}}"></firebase-document>
 						<cover-editor speaker={{speaker}}></cover-editor>
 					</section>
 				</iron-pages>

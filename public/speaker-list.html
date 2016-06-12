@@ -41,11 +41,7 @@
     </style>
 
     <template>
-        <firebase-collection
-            location="{{dataUrl}}"
-            data="{{speakers}}"></firebase-collection>
-
-        <p style="text-align: center" hidden="[[_isEmpty(speakers.length)]]">載入中…</p>
+        <p style="text-align: center" hidden="[[speakers.length]]">載入中…</p>
 
         <template is="dom-repeat" items="[[speakers]]" as="speaker" role="listbox">
             <paper-icon-item data-key="[[speaker.__firebaseKey__]]">
@@ -62,31 +58,25 @@
         <paper-dialog id="deleteConfirm" modal always-on-top
                       on-iron-overlay-closed="delCover">
             <div>
-                確定刪除<strong>{{_findNameByKey(delKey)}}</strong>？
+                確定刪除<strong>[[_findNameByKey(delKey)]]</strong>？
             </div>
             <div class="buttons">
-                <paper-button dialog-dismiss>取消</paper-button>
+                <paper-button dialog-dismiss autofocus>取消</paper-button>
                 <paper-button dialog-confirm>確認</paper-button>
             </div>
         </paper-dialog>
-
-        <paper-fab icon="add" on-tap="newCover"></paper-fab>
     </template>
 
     <script>
         Polymer({
             is: "speaker-list",
             properties: {
-                dataUrl: {
-                    type: String,
+                speakers: {
+                    type: Array,
                     notify: true
                 },
-                speakerUrl: {
+                speakerId: {
                     type: String,
-                    notify: true
-                },
-                schema: {
-                    type: Object,
                     notify: true
                 },
                 page: {
@@ -98,32 +88,17 @@
                     notify: true
                 }
             },
-
-            _isEmpty: function(length) {
-                return !!length;
-            },
             
             _findNameByKey: function(id) {
                 var speaker = this.speakers.filter(function(obj) {
                     return obj.id === id;
                 });
-                console.log(speaker);
                 return speaker[0].name;
             },
 
             editCover: function(e) {
                 // update the speaker's url for editor
-                this.speakerUrl = this.dataUrl + "/" + e.target.offsetParent.dataKey;
-                this.page = "editor";
-            },
-
-            newCover: function() {
-                var last = this.speakers.length;
-                this.$$("firebase-collection").add(this.schema);
-
-                // update the newst speaker's id
-                this.set("speakers." + last + ".id", this.speakers[last].__firebaseKey__);
-                this.speakerUrl = this.dataUrl + "/" + this.speakers[last].__firebaseKey__;
+                this.speakerId = e.target.offsetParent.dataKey;
                 this.page = "editor";
             },
 
@@ -133,7 +108,7 @@
             },
             
             delCover: function(e) {
-                if (e.detail.confirmed === true) this.$$("firebase-collection").removeByKey(this.delKey);
+                if (e.detail.confirmed) Polymer.dom(document).querySelector("firebase-collection").removeByKey(this.delKey);
             }
         });
     </script>
