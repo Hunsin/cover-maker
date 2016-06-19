@@ -21,6 +21,11 @@
 	app._isList = function(page) {
 		return (page === "list")? "menu" : "arrow-back";
 	};
+
+	app._firebaseLoaded = function(e) {
+		document.querySelector("speaker-list").empty = (this.speakers.length == 0);
+	};
+
 	app._searchRange = function(search) {
 		return search + "\uf8ff";
 	};

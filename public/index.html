@@ -48,7 +48,8 @@
 							data="{{speakers}}"
 							order-by-child="name"
 							start-at="[[search]]"
-							end-at="[[_searchRange(search)]]"></firebase-collection>
+							end-at="[[_searchRange(search)]]"
+							on-firebase-value="_firebaseLoaded"></firebase-collection>
 						<speaker-list
 							speakers="{{speakers}}"
 							speaker-id="{{speakerId}}"
