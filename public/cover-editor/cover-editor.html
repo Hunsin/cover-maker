@@ -193,7 +193,7 @@
 			地點文字顏色：
 			<input type="button" value="白色" on-tap="toggleTextColor">
 			<input type="button" value="黑色" on-tap="toggleTextColor">
-			<a href$="/export/[[speaker.id]]" target="_blank">輸出海報！</a>
+			<a download="ioh_cover.jpg" on-tap="exportCover">輸出海報！</a>
 		</div>
 	</template>
 	
@@ -340,6 +340,57 @@
 					if (this.status != 200) console.log("error");
 				};
 				xhr.send(formData);
+			},
+
+			exportCover: function(e) {
+				var c = document.createElement("canvas");
+				c.width = 1920;
+				c.height = 1080;
+
+				var ctx = c.getContext("2d"),
+					background = document.querySelector("#background"),
+					avatar = document.querySelector("#avatar"),
+					infoBox = document.querySelector("#cover-info"),
+					infoText = document.querySelector("textarea"),
+					banner = new Image();
+				banner.src = "cover-editor/poster-brand.png";
+				ctx.font = "32px 'Microsoft Jhenghei', helvetica";
+
+				// background image
+				ctx.drawImage(background, background.offsetLeft * 2, background.offsetTop * 2, background.offsetWidth * 2, background.offsetHeight * 2);
+
+				// avatar image & border
+				ctx.fillStyle = "white";
+				ctx.fillRect(this.speaker.avatarPosition * 2, 460, 320, 320);
+				var zoom_rate = avatar.offsetWidth / avatar.naturalWidth;
+				ctx.drawImage(avatar, -1 * avatar.offsetLeft / zoom_rate, -1 * avatar.offsetTop / zoom_rate, 150 / zoom_rate, 150 / zoom_rate, this.speaker.avatarPosition * 2 + 10, 470, 300, 300);
+				
+				// info
+				ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+				ctx.fillRect(infoBox.offsetLeft * 2 + 16, 460, infoText.offsetWidth * 2, infoText.offsetHeight * 2);
+				ctx.fillStyle = "black";
+				ctx.textBaseline = "top";
+				ctx.fillText(this.speaker.info.Text, infoBox.offsetLeft * 2 + 32, 492);
+
+				// location
+				ctx.fillStyle = this.speaker.locationColor;
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+				ctx.fillText(this.speaker.location, this.speaker.avatarPosition * 2 + 160, 820);
+
+				// experience
+				ctx.drawImage(banner, 0, 860, 1920, 220);
+				ctx.fillStyle = "black";
+				ctx.textAlign = "end";
+				ctx.fillText(this.speaker.name, 1860, 906);
+				for (var i = 0; i < 3; i++) {
+					ctx.fillStyle = (i == this.speaker.experienceFocus - 1)? "red" : "black";
+					ctx.fillText(this.speaker.experience[i], 1860, 950 + i * 44);
+				}
+
+				// export
+				var dataURL = c.toDataURL("image/jpeg");
+				e.target.href = dataURL;
 			},
 
 			_infoPosition: function(avatarPosition) {

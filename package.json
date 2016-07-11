@@ -8,8 +8,7 @@
     "express": "^4.13.4",
     "firebase": "^3.0.4",
     "multer": "^1.1.0",
-    "vulcanize": "^1.14.8",
-    "webshot": "^0.18.0"
+    "vulcanize": "^1.14.8"
   },
   "scripts": {
     "build": "mkdir public/uploads && cd public && bower install",
