@@ -1,5 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="hammer.html">
+
 <dom-module id="cover-editor">
 	<style>
 		:host {
@@ -12,25 +16,26 @@
 			box-sizing: border-box;
 		}
 
+		img {
+			position: absolute;
+			height: auto;
+			transition: opacity 400ms;
+			will-change: top, left, width, opacity;
+		}
+
 		.experience-text {
-			margin: 0 0 0 240px;
-		    
-		    width: 690px;
+		    width: 100%;
 			height: 22px;
 		    line-height: 22px;
 		    
 		    text-align: right;
 		}
 		
-		.experience-text:first-child {
-			margin-top: 12px;
-			margin-right: 30px;
-		}
-		
 		input, textarea {
 			border: none;
 			padding: 0;
-			
+
+			background-color: transparent;
 			overflow: hidden;
 		
 			@apply(--paper-font-common-base);
@@ -42,21 +47,19 @@
 			background-repeat: repeat;
 			overflow: hidden;
 		}
-		
-		.img-area img {
-			position: relative;
-			height: auto;
+
+		.img-area paper-spinner {
+			display: none;
+			top: calc(50% - 14px);
+			left: calc(50% - 14px);
 		}
 
-		.text-red {
-			margin: 0 4px;
-			
-			width: 22px;
-			height: 22px;
+		.loading {
+			opacity: 0;
 		}
-		
-		input.text-red:checked + .experience-text {
-			color: #F00;
+
+		.loading + paper-spinner{
+			display: block;
 		}
 		
 		#cover-background {
@@ -110,26 +113,34 @@
 			line-height: 40px;
 			
 			text-align: center;
-			background-color: transparent;
 		}
 		
 		#experience-box {
 		    position: absolute;
 		    top: 430px;
-
-			display: -webkit-flex;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-flex-flow: row-reverse wrap;
-			flex-flow: row-reverse wrap;
-			align-content: flex-start;
 		    width: inherit;
 		    height: 110px;
-			
-		    background-image: url(poster-brand.png);
-		    background-size: cover;
 		}
-		
+
+		#experience-box img {
+			width: inherit;
+		}
+
+		#experience-box div {
+			position: absolute;
+			top: 12px;
+			right: 30px;
+		}
+
+		#experience-box paper-radio-group {
+			position: absolute;
+			top: 34px;
+			right: 0;
+
+			width: 30px;
+			--paper-radio-group-item-padding: 1px 7px;
+		}
+
 		#cover-avatar {
 			position: absolute;
 			top: 230px;
@@ -146,15 +157,17 @@
 
 			<!-- background image -->
 			<div class="img-area" id="cover-background">
-				<img id="background" src="[[speaker.background.URL]]"
+				<img id="background" src="[[speaker.background.URL]]" class="loading" on-load="_imgLoaded"
 					 style$="top: [[speaker.background.Top]]px; left: [[speaker.background.Left]]px; width: [[speaker.background.Width]]px">
+				<paper-spinner active></paper-spinner>
 			</div>
 
 			<!-- avatar image -->
 			<div class="img-area" id="cover-avatar"
-				 style$="left: [[speaker.avatarPosition]]px;"> 
-				<img id="avatar" src="[[speaker.avatar.URL]]"
+				 style$="left: [[speaker.avatarPosition]]px;">
+				<img id="avatar" src="[[speaker.avatar.URL]]" class="loading" on-load="_imgLoaded"
 					 style$="top: [[speaker.avatar.Top]]px; left: [[speaker.avatar.Left]]px; width: [[speaker.avatar.Width]]px">
+				<paper-spinner active></paper-spinner>
 			</div>
 
 			<!-- location -->
@@ -169,30 +182,35 @@
 			</div>
 
 			<div id="experience-box">
-				<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
-				<input class="text-red" name="text_red" type="radio" value=1
-					   checked="{{_isFocus(speaker.experienceFocus, 1)}}" on-change="_changeFocus">
-				<input class="experience-text" type="text" value={{speaker.experience.0::input}} placeholder="輸入學經歷 如：MIT Media Lab, Master of Science Media Arts and Science 碩士, 20xx">
-				<input class="text-red" name="text_red" type="radio" value=2
-					   checked="{{_isFocus(speaker.experienceFocus, 2)}}" on-change="_changeFocus">
-				<input class="experience-text" type="text" value={{speaker.experience.1::input}} placeholder="輸入學經歷">
-				<input class="text-red" name="text_red" type="radio" value=3
-					   checked="{{_isFocus(speaker.experienceFocus, 3)}}" on-change="_changeFocus">
-				<input class="experience-text" type="text" value={{speaker.experience.2::input}} placeholder="輸入學經歷">
+				<img class="loading" src="poster-brand.png" on-load="_imgLoaded">
+				<div>
+					<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 1)}}"
+						   value={{speaker.experience.0::input}} placeholder="輸入學經歷 如：MIT Media Lab, Master of Science Media Arts and Science 碩士, 20xx">
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 2)}}"
+						   value={{speaker.experience.1::input}} placeholder="輸入學經歷">
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 3)}}"
+						   value={{speaker.experience.2::input}} placeholder="輸入學經歷">
+				</div>
+				<paper-radio-group selected="{{speaker.experienceFocus}}">
+					<paper-radio-button name=1 noink></paper-radio-button>
+					<paper-radio-button name=2 noink></paper-radio-button>
+					<paper-radio-button name=3 noink></paper-radio-button>
+				</paper-radio-group>
 			</div>
 		</div>
 
 		<!-- control panel -->
 		<div>
-			選擇背景圖片：<input class="upload-img" name="background" type="file" accept="image/*" on-change="sendImg"><br>
-			選擇大頭貼照：<input class="upload-img" name="avatar" type="file" accept="image/*" on-change="sendImg"><br>
+			選擇背景圖片：<input class="upload-img" name="background" type="file" accept="image/*" on-change="_sendImg"><br>
+			選擇大頭貼照：<input class="upload-img" name="avatar" type="file" accept="image/*" on-change="_sendImg"><br>
 			大頭貼位置：
-			<input type="button" value="左側" on-tap="togglePosition">
-			<input type="button" value="右側" on-tap="togglePosition">
+			<input type="button" value="左側" on-tap="_setPosition">
+			<input type="button" value="右側" on-tap="_setPosition">
 			<input type="button" value="不顯示" on-tap=""><br>
 			地點文字顏色：
-			<input type="button" value="白色" on-tap="toggleTextColor">
-			<input type="button" value="黑色" on-tap="toggleTextColor">
+			<input type="button" value="白色" on-tap="_setTextColor">
+			<input type="button" value="黑色" on-tap="_setTextColor">
 			<a download="ioh_cover.jpg" on-tap="exportCover">輸出海報！</a>
 		</div>
 	</template>
@@ -215,6 +233,12 @@
 					imgAvatar = this.querySelector("#avatar"),
 					infoContainer = this.querySelector("#cover-info"),
 					infoCtrl = this.querySelector("#info-ctrl");
+	
+				var imgs = this.querySelectorAll("img");
+				imgs.onload = function() {
+					console.log("load");
+					this.style.opacity = 1;
+				};
 
 				// image pan, zoom by touchscreen or mouse
 				function hmImage(element) {
@@ -305,25 +329,15 @@
 				hmInfo();
 			},
 
-			togglePosition: function(e) {
-				if (e.target.value == "左側") {
-					this.set("speaker.avatarPosition", 32);
-				}
-				else {
-					this.set("speaker.avatarPosition", 768);
-				}
+			_setPosition: function(e) {
+				this.set("speaker.avatarPosition", (e.target.value == "左側")? 32 : 768);
 			},
 
-			toggleTextColor: function(e) {
-				if (e.target.value == "白色") {
-					this.set("speaker.locationColor", "white");
-				}
-				else {
-					this.set("speaker.locationColor", "black");
-				}
+			_setTextColor: function(e) {
+				this.set("speaker.locationColor", (e.target.value == "白色")? "white" : "black");
 			},
 
-			sendImg: function(e) {
+			_sendImg: function(e) {
 				var formData = new FormData(),
 					xhr = new XMLHttpRequest(),
 					img = e.target.files[0],
@@ -340,6 +354,7 @@
 					if (this.status != 200) console.log("error");
 				};
 				xhr.send(formData);
+				document.querySelector("#" + imgName).classList.add("loading");
 			},
 
 			exportCover: function(e) {
@@ -352,8 +367,7 @@
 					avatar = document.querySelector("#avatar"),
 					infoBox = document.querySelector("#cover-info"),
 					infoText = document.querySelector("textarea"),
-					banner = new Image();
-				banner.src = "cover-editor/poster-brand.png";
+					banner = document.querySelector("#experience-box img");
 				ctx.font = "32px 'Microsoft Jhenghei', helvetica";
 
 				// background image
@@ -362,8 +376,8 @@
 				// avatar image & border
 				ctx.fillStyle = "white";
 				ctx.fillRect(this.speaker.avatarPosition * 2, 460, 320, 320);
-				var zoom_rate = avatar.offsetWidth / avatar.naturalWidth;
-				ctx.drawImage(avatar, -1 * avatar.offsetLeft / zoom_rate, -1 * avatar.offsetTop / zoom_rate, 150 / zoom_rate, 150 / zoom_rate, this.speaker.avatarPosition * 2 + 10, 470, 300, 300);
+				var zoomRate = avatar.offsetWidth / avatar.naturalWidth;
+				ctx.drawImage(avatar, -1 * avatar.offsetLeft / zoomRate, -1 * avatar.offsetTop / zoomRate, 150 / zoomRate, 150 / zoomRate, this.speaker.avatarPosition * 2 + 10, 470, 300, 300);
 				
 				// info
 				ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
@@ -402,11 +416,11 @@
 			},
 
 			_isFocus: function(num1, num2) { 
-				return num1 == num2;
+				return (num1 == num2)? "color: red;" : "";
 			},
 
-			_changeFocus: function(e) {
-				this.set("speaker.experienceFocus", e.target.value);
+			_imgLoaded: function(e) {
+				e.target.classList.remove("loading");
 			}
 		});
 	</script>
