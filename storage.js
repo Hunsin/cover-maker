@@ -43,7 +43,6 @@ dbListener.on("child_removed", (snapshot) => {
 
 	removeImg(speaker.avatar.URL);
 	removeImg(speaker.background.URL);
-	removeImg(`/uploads/cover${speaker.id}.jpeg`);
 });
 
 // handle upload files

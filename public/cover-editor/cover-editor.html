@@ -22,14 +22,6 @@
 			transition: opacity 400ms;
 			will-change: top, left, width, opacity;
 		}
-
-		.experience-text {
-		    width: 100%;
-			height: 22px;
-		    line-height: 22px;
-		    
-		    text-align: right;
-		}
 		
 		input, textarea {
 			border: none;
@@ -40,6 +32,14 @@
 		
 			@apply(--paper-font-common-base);
 			font-size: 16px;
+		}
+
+		.experience-text {
+		    width: 100%;
+			height: 22px;
+		    line-height: 22px;
+		    
+		    text-align: right;
 		}
 		
 		.img-area {
@@ -60,6 +60,16 @@
 
 		.loading + paper-spinner{
 			display: block;
+		}
+
+		#cover-avatar {
+			position: absolute;
+			top: 230px;
+			
+			width: 160px;
+			height: 160px;
+			border: 5px solid;
+			border-color: #FFF;
 		}
 		
 		#cover-background {
@@ -101,7 +111,8 @@
 			width: 24px;
 			height: 24px;
 
-			background-color: red;
+			border-color: white;
+			border-bottom-style: solid;
 		}
 
 		#cover-location {
@@ -122,14 +133,14 @@
 		    height: 110px;
 		}
 
-		#experience-box img {
-			width: inherit;
-		}
-
 		#experience-box div {
 			position: absolute;
 			top: 12px;
 			right: 30px;
+		}
+
+		#experience-box img {
+			width: inherit;
 		}
 
 		#experience-box paper-radio-group {
@@ -139,16 +150,6 @@
 
 			width: 30px;
 			--paper-radio-group-item-padding: 1px 7px;
-		}
-
-		#cover-avatar {
-			position: absolute;
-			top: 230px;
-			
-			width: 160px;
-			height: 160px;
-			border: 5px solid;
-			border-color: #FFF;
 		}
 	</style>
 	
@@ -229,16 +230,10 @@
 				"use strict";
 
 				var self = this,
-					imgBackground = this.querySelector("#background"),
-					imgAvatar = this.querySelector("#avatar"),
+					imgBackground = this.$.background,
+					imgAvatar = this.$.avatar,
 					infoContainer = this.querySelector("#cover-info"),
 					infoCtrl = this.querySelector("#info-ctrl");
-	
-				var imgs = this.querySelectorAll("img");
-				imgs.onload = function() {
-					console.log("load");
-					this.style.opacity = 1;
-				};
 
 				// image pan, zoom by touchscreen or mouse
 				function hmImage(element) {
@@ -251,7 +246,7 @@
 						img.Width = e.target.offsetWidth;
 						img.Top = e.target.offsetTop;
 						img.Left = e.target.offsetLeft;
-						self.notifyPath("speaker." + e.target.id, img);
+						self.set("speaker." + e.target.id, img);
 					}
 
 					// center position assigned by Hammer.js is relative to window,
@@ -316,7 +311,7 @@
 						var info = self.speaker.info;
 						info.Width = infoContainer.offsetWidth;
 						info.Height = infoContainer.offsetHeight;
-						self.notifyPath("speaker.info", info);
+						self.set("speaker.info", info);
 					}
 
 					hm.add(new Hammer.Pan({threshold: 0, pointers: 0}));
@@ -363,8 +358,8 @@
 				c.height = 1080;
 
 				var ctx = c.getContext("2d"),
-					background = document.querySelector("#background"),
-					avatar = document.querySelector("#avatar"),
+					background = this.$.background,
+					avatar = this.$.avatar,
 					infoBox = document.querySelector("#cover-info"),
 					infoText = document.querySelector("textarea"),
 					banner = document.querySelector("#experience-box img");
@@ -403,8 +398,7 @@
 				}
 
 				// export
-				var dataURL = c.toDataURL("image/jpeg");
-				e.target.href = dataURL;
+				e.target.href = c.toDataURL("image/jpeg");
 			},
 
 			_infoPosition: function(avatarPosition) {
@@ -412,7 +406,7 @@
 			},
 
 			_infoCtrlPosition: function(avatarPosition) {
-				return (avatarPosition == 768)? "left: 0; cursor: sw-resize; border-top-right-radius: 50%;" : "right: 0; cursor: se-resize; border-top-left-radius: 50%;";
+				return (avatarPosition == 768)? "left: 0; cursor: sw-resize; border-left-style: solid;" : "right: 0; cursor: se-resize; border-right-style: solid;";
 			},
 
 			_isFocus: function(num1, num2) { 
