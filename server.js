@@ -13,6 +13,13 @@ firebase.initializeApp({
 app.use(express.static(__dirname + "/public"));
 app.use(require("./storage"));
 
+app.get("/edit", function(req, res) {
+	res.redirect("/");
+});
+app.get("/edit/:id", function(req, res) {
+	res.sendFile(__dirname + "/public/index.html");
+});
+
 // 404 error handler
 app.use(function(req, res, next) {
 	res.status(404);

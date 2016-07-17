@@ -8,7 +8,6 @@
 		<!-- This should be the only html import since the project uses vulcanize to reduce HTTP requests. 
 			 Other imports should go in elements-list.html -->
 		<link rel="import" href="/elements.html">
-		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 		<style is="custom-style" include="iron-flex iron-positioning">
 			:root {
 				--paper-toolbar-color: #FFF;
@@ -27,19 +26,34 @@
 				right: 1.5em;
 				bottom: 2em;
 			}
+
+			paper-toolbar a {
+				color: inherit;
+			}
 		</style>
 	</head>
 	
 <!-- body -->
 	<body class="fullbleed layout vertical">
 		<template is="dom-bind" id="app">
+
+			<!-- routing -->
+			<app-location route="{{route}}"></app-location>
+			<app-route
+				route="{{route}}"
+				pattern="/:page"
+				data="{{routeData}}"
+				tail="{{subroute}}"></app-route>
+
 			<paper-header-panel>
 				<paper-toolbar>
-					<paper-icon-button noink icon="[[_isList(page)]]" on-tap="backToList"></paper-icon-button>
-					<div class="title">IOH Cover Maker</div>
+					<a href="/">
+						<paper-icon-button noink icon="[[_isHome(routeData.page)]]"></paper-icon-button>
+					</a>
+					<div class="title" style="margin-left:0;">IOH Cover Maker</div>
 					<paper-input label="搜尋" no-label-float value="{{search::input}}"></paper-input>
 				</paper-toolbar>
-				<iron-pages attr-for-selected="page-route" selected="{{page}}">
+				<iron-pages attr-for-selected="page-route" selected="[[routeData.page]]" fallback-selection="list">
 
 				<!-- speakers list -->
 					<section page-route="list">
@@ -52,21 +66,34 @@
 							on-firebase-value="_firebaseLoaded"></firebase-collection>
 						<speaker-list
 							speakers="{{speakers}}"
-							speaker-id="{{speakerId}}"
-							page="{{page}}"></speaker-list>
+							speaker-id="{{speakerId}}"></speaker-list>
 						<paper-fab icon="add" on-tap="newCover"></paper-fab>
 					</section>
 					
 				<!-- cover editor panel -->
-					<section page-route="editor">
+					<section page-route="edit">
 						<firebase-document 
-							location="{{getSpeakerUrl(speakerId)}}"
+							location="https://ioh-cover-maker.firebaseio.com/speakers[[subroute.path]]"
 							data="{{speaker}}"></firebase-document>
 						<cover-editor speaker={{speaker}}></cover-editor>
 					</section>
 				</iron-pages>
 			</paper-header-panel>
 		</template>
+		<script>
+			(function() {
+				if ("registerElement" in document
+				 && "import" in document.createElement("link")
+				 && "content" in document.createElement("template")) {
+					// Browser support Web Components!
+				} else {
+					// polyfill the platform
+					var js = document.createElement("script");
+					js.src = "/bower_components/webcomponentsjs/webcomponents-lite.min.js";
+					document.body.appendChild(js);
+				}
+			})();
+		</script>
 		<script src="/assets/app.js"></script>
 	</body>
 </html>

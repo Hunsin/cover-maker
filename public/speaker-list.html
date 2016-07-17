@@ -41,6 +41,11 @@
 			background-size: 100%;
 			background-repeat: no-repeat;
 		}
+
+		.item-link {
+            color: inherit;
+            text-decoration: none;
+		}
     </style>
 
     <template>
@@ -49,15 +54,19 @@
         <p style="text-align: center" hidden="[[!empty]]">空空如也～快來建立第一個吧！</p>
 
         <template is="dom-repeat" items="[[speakers]]" as="speaker" role="listbox">
-            <paper-icon-item data-key="[[speaker.__firebaseKey__]]">
-                <div class="avatar" on-tap="editCover" item-icon
-                     style$="background-image: url([[speaker.avatar.URL]]);"></div>
-                <paper-item-body on-tap="editCover" two-line>
-                    <div>[[speaker.name]]</div>
-                    <div secondary>[[speaker.experience.0]]</div>
-                </paper-item-body>
-                <paper-icon-button icon="delete" on-tap="delConfirm"></paper-icon-button>
-            </paper-icon-item>
+            <a class="item-link" tabindex="-1"
+               href$="/edit/[[speaker.__firebaseKey__]]">
+                <paper-icon-item>
+                    <div class="avatar" item-icon
+                         style$="background-image: url([[speaker.avatar.URL]]);"></div>
+                    <paper-item-body two-line>
+                        <div>[[speaker.name]]</div>
+                        <div secondary>[[speaker.experience.0]]</div>
+                    </paper-item-body>
+                    <paper-icon-button icon="delete" on-tap="delConfirm"
+                                       del-key="[[speaker.__firebaseKey__]]"></paper-icon-button>
+                </paper-icon-item>
+            </a>
         </template>
 
         <paper-dialog id="deleteConfirm" modal always-on-top
@@ -80,40 +89,28 @@
                     type: Array,
                     notify: true
                 },
-                speakerId: {
-                    type: String,
-                    notify: true
-                },
-                page: {
-                    type: String,
-                    notify: true
-                },
                 delKey: {
                     type: String,
                     notify: true
                 },
                 empty: {
-                    Boolean,
+                    type: Boolean,
                     value: false,
                     notify: true
                 }
             },
             
             _findNameByKey: function(id) {
+                if (!id) return;
                 var speaker = this.speakers.filter(function(obj) {
                     return obj.id === id;
                 });
                 return speaker[0].name;
             },
 
-            editCover: function(e) {
-                // update the speaker's url for editor
-                this.speakerId = e.target.offsetParent.dataKey;
-                this.page = "editor";
-            },
-
             delConfirm: function(e) {
-                this.delKey = e.target.offsetParent.offsetParent.dataKey;
+                e.preventDefault();
+                this.delKey = e.target.offsetParent.delKey;
                 this.$.deleteConfirm.open();
             },
             
