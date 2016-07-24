@@ -51,22 +51,31 @@
 						<paper-icon-button noink icon="[[_isHome(routeData.page)]]"></paper-icon-button>
 					</a>
 					<div class="title" style="margin-left:0;">IOH Cover Maker</div>
-					<paper-input label="搜尋" no-label-float value="{{search::input}}"></paper-input>
+					<paper-input label="搜尋" no-label-float value="{{searchText::input}}">
+						<iron-icon icon="search" prefix></iron-icon>
+					</paper-input>
 				</paper-toolbar>
+				
 				<iron-pages attr-for-selected="page-route" selected="[[routeData.page]]" fallback-selection="list">
 
 				<!-- speakers list -->
 					<section page-route="list">
 						<firebase-collection
 							location="https://ioh-cover-maker.firebaseio.com/speakers"
-							data="{{speakers}}"
-							order-by-child="name"
-							start-at="[[search]]"
-							end-at="[[_searchRange(search)]]"
-							on-firebase-value="_firebaseLoaded"></firebase-collection>
-						<speaker-list
-							speakers="{{speakers}}"
-							speaker-id="{{speakerId}}"></speaker-list>
+							on-firebase-value="_firebaseLoaded"
+							data="{{speakersData}}"></firebase-collection>
+						<iron-ajax auto hidden
+							url="/search"
+							params$='{"text": "[[searchText]]"}'
+							last-response="{{searchResponse}}"
+							on-response="_searchResponse"
+							debounce-duration="400"></iron-ajax>
+						<speaker-list id="firebase-list"
+							speakers="[[speakersData]]"
+							hidden="[[searchText]]"></speaker-list>
+						<speaker-list id="search-list"
+							speakers="[[searchResponse]]"
+							hidden="[[!searchText]]"></speaker-list>
 						<paper-fab icon="add" on-tap="newCover"></paper-fab>
 					</section>
 					

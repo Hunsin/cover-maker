@@ -1,10 +1,11 @@
 {
   "name": "ioh-cover-maker",
-  "version": "0.8.0",
+  "version": "0.8.4",
   "description": "",
   "main": "server.js",
   "dependencies": {
     "bower": "^1.7.9",
+    "elasticsearch": "^11.0.1",
     "express": "^4.13.4",
     "firebase": "^3.0.4",
     "multer": "^1.1.0",
@@ -12,6 +13,8 @@
   },
   "scripts": {
     "build": "mkdir public/uploads && cd public && bower install",
+    "elastic": "cd elasticsearch-2.3.4/bin && ./elasticsearch",
+    "getelastic": "wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz && tar zxvf elasticsearch-2.3.4.tar.gz",
     "vulcanize": "vulcanize --inline-scripts --inline-css --strip-comments public/elements-list.html > public/elements.html",
     "start": "node server.js"
   },

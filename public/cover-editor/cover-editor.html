@@ -186,17 +186,17 @@
 				<img class="loading" src="poster-brand.png" on-load="_imgLoaded">
 				<div>
 					<input class="experience-text" type="text" value={{speaker.name::input}} placeholder="點擊輸入大名">
-					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 1)}}"
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 0)}}"
 						   value={{speaker.experience.0::input}} placeholder="輸入學經歷 如：MIT Media Lab, Master of Science Media Arts and Science 碩士, 20xx">
-					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 2)}}"
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 1)}}"
 						   value={{speaker.experience.1::input}} placeholder="輸入學經歷">
-					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 3)}}"
+					<input class="experience-text" type="text" style$="{{_isFocus(speaker.experienceFocus, 2)}}"
 						   value={{speaker.experience.2::input}} placeholder="輸入學經歷">
 				</div>
 				<paper-radio-group selected="{{speaker.experienceFocus}}">
+					<paper-radio-button name=0 noink></paper-radio-button>
 					<paper-radio-button name=1 noink></paper-radio-button>
 					<paper-radio-button name=2 noink></paper-radio-button>
-					<paper-radio-button name=3 noink></paper-radio-button>
 				</paper-radio-group>
 			</div>
 		</div>

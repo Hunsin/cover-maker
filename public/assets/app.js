@@ -10,17 +10,21 @@
 	};
 	xhr.send();
 
+	// initialize so that #search-list will hide
+	app.searchText = "";
+
 	app._isHome = function(page) {
-		return (!page)? "lightbulb-outline" : "arrow-back";
+		return (page)? "arrow-back" : "lightbulb-outline";
 	};
 
-	app._firebaseLoaded = function(e) {
-		document.querySelector("speaker-list").empty = (this.speakers.length == 0);
+	app._firebaseLoaded = function() {
+		document.querySelector("#firebase-list").empty = (this.speakersData.length == 0);
 	};
 
-	app._searchRange = function(search) {
-		return search + "\uf8ff";
+	app._searchResponse = function() {
+		document.querySelector("#search-list").empty = (this.searchResponse.length == 0);
 	};
+
 	app.newCover = function() {
 		var key = document.querySelector("firebase-collection").add(schema).key();
 

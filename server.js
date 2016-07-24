@@ -12,6 +12,7 @@ firebase.initializeApp({
 // middleware
 app.use(express.static(__dirname + "/public"));
 app.use(require("./storage"));
+app.use(require("./search"));
 
 app.get("/edit", function(req, res) {
 	res.redirect("/");
