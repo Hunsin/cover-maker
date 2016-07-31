@@ -61,7 +61,7 @@
 				<!-- speakers list -->
 					<section page-route="list">
 						<firebase-collection
-							location="https://ioh-cover-maker.firebaseio.com/speakers"
+							location="#FIREBASE_URL#speakers"
 							on-firebase-value="_firebaseLoaded"
 							data="{{speakersData}}"></firebase-collection>
 						<iron-ajax auto hidden
@@ -82,7 +82,7 @@
 				<!-- cover editor panel -->
 					<section page-route="edit">
 						<firebase-document 
-							location="https://ioh-cover-maker.firebaseio.com/speakers[[subroute.path]]"
+							location="#FIREBASE_URL#speakers[[subroute.path]]"
 							data="{{speaker}}"></firebase-document>
 						<cover-editor speaker={{speaker}}></cover-editor>
 					</section>

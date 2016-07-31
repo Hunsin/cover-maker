@@ -1,17 +1,17 @@
 "use strict";
 var express = require("express"),
 	router = express.Router(),
-	elasticsearch = require('elasticsearch'),
+	firebase = require("firebase"),
+	dbListener = firebase.database().ref("speakers");
+
+var elasticsearch = require('elasticsearch'),
 	client = new elasticsearch.Client({
 		host: "localhost:9200",
 		log: {
 			type: 'stdio',
 			levels: ['error', 'warning']
 		}
-	}),
-	firebase = require("firebase"),
-	db = firebase.database(),
-	dbListener = db.ref("speakers");
+	});
 
 dbListener.on("child_added", (data) => {
 	let speaker = data.val();
