@@ -1,24 +1,18 @@
 "use strict";
 var express = require("express"),
 	router = express.Router(),
-	firebase = require("firebase"),
 	fs = require("fs"),
+	gm = require("gm");
+
+var firebase = require("firebase"),
 	db = firebase.database(),
 	dbListener = db.ref("speakers");
 
 var multer = require("multer"),
-	storage = multer.diskStorage({
-		destination: function(req, file, cb) {
-			cb(null, "./public/uploads/");
-		},
-		filename: function(req, file, cb) {
-			let imgName = req.params.imgName, // avatar or background
-				type = file.mimetype.replace("image/", "."); // .png or .jpeg
-
-			cb(null, imgName + "_" + Date.now() + type);
-		}
-	}),
-	upload = multer({storage: storage});
+	upload = multer({
+		storage: multer.memoryStorage(),
+		limits: {fileSize: 8388608} // 8MB
+	});
 
 function removeImg(url) {
 	if (url != "/assets/avatar.png" && url != "/assets/instruction.png") {
@@ -48,17 +42,29 @@ dbListener.on("child_removed", (snapshot) => {
 // handle upload files
 router.post("/upload/:userId/:imgName", upload.single("img"), (req, res) => {
 	let userId = req.params.userId,
-		imgName = req.params.imgName,
+		imgName = req.params.imgName, // avatar or background
+		type = req.file.mimetype.replace("image/", "."), // .png or .jpeg
+		filename = imgName + "_" + Date.now() + type,
 		ref = db.ref(`speakers/${userId}/${imgName}/URL`);
-	
+
 	// prevent bad request
 	if (imgName != "avatar" && imgName != "background") res.status(400).end();
-
-	// set new image url and remove the old one
-	ref.once("value", (data) => {
-		ref.set(`/uploads/${req.file.filename}`);
-		removeImg(data.val());
+	
+	// rotate image if necessary and save the file
+	gm(req.file.buffer).autoOrient().write(`./public/uploads/${filename}`, (err) => {
+		if (err) {
+			console.log(err);
+			res.status(503);
+		} else {
+			
+			// set new image url and remove the old one
+			ref.once("value", (data) => {
+				ref.set(`/uploads/${filename}`);
+				removeImg(data.val());
+			});
+		}
 	});
+
 	res.end();
 });
 
