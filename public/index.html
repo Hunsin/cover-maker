@@ -27,6 +27,10 @@
 				bottom: 2em;
 			}
 
+			paper-toast paper-button {
+				color: var(--accent-color);
+			}
+
 			paper-toolbar a {
 				color: inherit;
 			}
@@ -87,6 +91,13 @@
 						<cover-editor speaker={{speaker}}></cover-editor>
 					</section>
 				</iron-pages>
+
+			<!-- toast message box -->
+			<paper-toast id="toast0" opened duration=0
+						 text="This is non-offical IOH Cover Maker, for more information about IOH, please visit: ioh.tw">
+				<paper-button onclick="toast0.toggle()">I see</paper-button>
+			</paper-toast>
+				
 			</paper-header-panel>
 		</template>
 		<script>
