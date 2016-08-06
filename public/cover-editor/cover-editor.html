@@ -379,7 +379,26 @@
 				ctx.fillRect(infoBox.offsetLeft * 2 + 16, 460, infoText.offsetWidth * 2, infoText.offsetHeight * 2);
 				ctx.fillStyle = "black";
 				ctx.textBaseline = "top";
-				ctx.fillText(this.speaker.info.Text, infoBox.offsetLeft * 2 + 32, 492);
+
+				var text = this.speaker.info.Text,
+					maxWidth = infoText.offsetWidth * 2 - 32,
+					line = 0, index = 0, pre;
+				while (text.length) {
+					pre = index;
+					index = text.indexOf(" ", index + 1);
+					if (index == -1) {
+						for (var i = text.length; ctx.measureText(text.substr(0, i)).width > maxWidth; i--);
+						ctx.fillText(text.substr(0, i), infoBox.offsetLeft * 2 + 32, 476 + line * 48);
+						text = text.substr(i);
+						line++;
+					}
+					else if (ctx.measureText(text.substr(0, index)).width > maxWidth) {
+						ctx.fillText(text.substr(0, pre), infoBox.offsetLeft * 2 + 32, 476 + line * 48);
+						text = text.substr(pre + 1);
+						index = 0;
+						line++;
+					}
+				}
 
 				// location
 				ctx.fillStyle = this.speaker.locationColor;
@@ -388,12 +407,14 @@
 				ctx.fillText(this.speaker.location, this.speaker.avatarPosition * 2 + 160, 820);
 
 				// experience
-				ctx.drawImage(banner, 0, 860, 1920, 220);
+				ctx.fillStyle = "white";
+				ctx.fillRect(0, 860, 1920, 220);
+				ctx.drawImage(banner, 0, 860);
 				ctx.fillStyle = "black";
 				ctx.textAlign = "end";
 				ctx.fillText(this.speaker.name, 1860, 906);
 				for (var i = 0; i < 3; i++) {
-					ctx.fillStyle = (i == this.speaker.experienceFocus - 1)? "red" : "black";
+					ctx.fillStyle = (i == this.speaker.experienceFocus)? "red" : "black";
 					ctx.fillText(this.speaker.experience[i], 1860, 950 + i * 44);
 				}
 
