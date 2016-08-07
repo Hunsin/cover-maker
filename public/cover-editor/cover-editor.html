@@ -1,4 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
@@ -14,6 +16,7 @@
 		
 		* {
 			box-sizing: border-box;
+			font-size: 16px;
 		}
 
 		img {
@@ -31,7 +34,6 @@
 			overflow: hidden;
 		
 			@apply(--paper-font-common-base);
-			font-size: 16px;
 		}
 
 		.experience-text {
@@ -104,17 +106,6 @@
 		    background-color: rgba(255, 255, 255, 0.4);
 		}
 
-		#info-ctrl {
-			position: absolute;
-			bottom: 0;
-
-			width: 24px;
-			height: 24px;
-
-			border-color: white;
-			border-bottom-style: solid;
-		}
-
 		#cover-location {
 			position: absolute;
 			top: 390px;
@@ -124,6 +115,24 @@
 			line-height: 40px;
 			
 			text-align: center;
+		}
+
+		#ctrl-panel {
+			display: flex;
+			margin: 0 auto;
+			justify-content: space-between;
+			max-width: 960px;
+		}
+
+		#info-ctrl {
+			position: absolute;
+			bottom: 0;
+
+			width: 24px;
+			height: 24px;
+
+			border-color: white;
+			border-bottom-style: solid;
 		}
 		
 		#experience-box {
@@ -150,6 +159,11 @@
 
 			width: 30px;
 			--paper-radio-group-item-padding: 1px 7px;
+		}
+
+		#export-link paper-button{
+			color: white;
+			background-color: var(--accent-color);
 		}
 	</style>
 	
@@ -202,17 +216,25 @@
 		</div>
 
 		<!-- control panel -->
-		<div>
-			選擇背景圖片：<input class="upload-img" name="background" type="file" accept="image/*" on-change="_sendImg"><br>
-			選擇大頭貼照：<input class="upload-img" name="avatar" type="file" accept="image/*" on-change="_sendImg"><br>
-			大頭貼位置：
-			<input type="button" value="左側" on-tap="_setPosition">
-			<input type="button" value="右側" on-tap="_setPosition">
-			<input type="button" value="不顯示" on-tap=""><br>
-			地點文字顏色：
-			<input type="button" value="白色" on-tap="_setTextColor">
-			<input type="button" value="黑色" on-tap="_setTextColor">
-			<a download="ioh_cover.jpg" on-tap="exportCover">輸出海報！</a>
+		<div id="ctrl-panel">
+			<div>
+				選擇背景圖片：<input class="upload-img" name="background" type="file" accept="image/*" on-change="_sendImg"><br>
+				選擇大頭貼照：<input class="upload-img" name="avatar" type="file" accept="image/*" on-change="_sendImg"><br>
+			</div>
+			<div>
+				大頭貼位置：
+				<button value=32 on-tap="_setPosition">左側</button>
+				<button value=768 on-tap="_setPosition">右側</button>
+				<button value="none" disabled>不顯示</button><br>
+				地點文字顏色：
+				<button value="white" on-tap="_setTextColor">白色</button>
+				<button value="black" on-tap="_setTextColor">黑色</button><br>
+			</div>
+			<a id="export-link" download="ioh_cover.jpg" style="text-decoration:none;">
+				<paper-button raised on-tap="exportCover">
+					<iron-icon icon="file-download"></iron-icon>輸出海報
+				</paper-button>
+			</a>
 		</div>
 	</template>
 	
@@ -325,11 +347,11 @@
 			},
 
 			_setPosition: function(e) {
-				this.set("speaker.avatarPosition", (e.target.value == "左側")? 32 : 768);
+				this.set("speaker.avatarPosition", e.target.value);
 			},
 
 			_setTextColor: function(e) {
-				this.set("speaker.locationColor", (e.target.value == "白色")? "white" : "black");
+				this.set("speaker.locationColor", e.target.value);
 			},
 
 			_sendImg: function(e) {
@@ -380,6 +402,7 @@
 				ctx.fillStyle = "black";
 				ctx.textBaseline = "top";
 
+				// text wrap
 				var text = this.speaker.info.Text,
 					maxWidth = infoText.offsetWidth * 2 - 32,
 					line = 0, index = 0, pre;
@@ -419,7 +442,7 @@
 				}
 
 				// export
-				e.target.href = c.toDataURL("image/jpeg");
+				this.$$("#export-link").href = c.toDataURL("image/jpeg");
 			},
 
 			_infoPosition: function(avatarPosition) {

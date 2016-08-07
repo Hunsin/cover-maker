@@ -108,7 +108,7 @@
 
             delConfirm: function(e) {
                 e.preventDefault();
-                this.delKey = e.target.offsetParent.delKey;
+                this.delKey = Polymer.dom(e).localTarget.delKey;
                 this.$.deleteConfirm.open();
             },
             
